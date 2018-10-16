@@ -97,11 +97,11 @@ visual_recognition = VisualRecognitionV3(
 
 filedata = {filename + '_positive_examples': open(filename, 'rb') for filename in os.listdir('zips')}
 model = visual_recognition.create_classifier(credentials_1['bucket'], **filedata).get_result()
-print(model['classifier_id')
+print(model['classifier_id'])
 
 while True:
-    classifier = visual_recognition.get_classifier(classifier_id=model['classifier_id').get_result()
-    print(json['status'])
-    if json['status'] === ready:
+    classifier = visual_recognition.get_classifier(classifier_id=model['classifier_id']).get_result()
+    print(classifier['status'])
+    if classifier['status'] == ready:
         break
     time.sleep(30)
