@@ -6,7 +6,6 @@ import types
 import pandas as pd
 import ibm_boto3
 import keras
-from sklearn.model_selection import train_test_split
 from botocore.client import Config
 from keras.applications.mobilenet import MobileNet, preprocess_input
 from keras.preprocessing.image import ImageDataGenerator
@@ -116,20 +115,14 @@ annotations = pandas_support(annotations)
 annotations_df = pd.read_csv(annotations, header=None)
 annotations_df = annotations_df.set_index([1])
 
-# Create a training and validation folder.
+# Create a training folder.
 train_dir = 'train'
-validation_dir = 'val'
-validation_size = 0.17
 
 # Purge data if directories already exist.
 if os.path.exists(train_dir) and os.path.isdir(train_dir):
     shutil.rmtree(train_dir)
 
-if os.path.exists(validation_dir) and os.path.isdir(validation_dir):
-    shutil.rmtree(validation_dir)
-
 os.mkdir(train_dir)
-os.mkdir(validation_dir)
 
 used_labels = annotations_df.index.unique().tolist()
 for label in used_labels:
@@ -140,24 +133,11 @@ for label in used_labels:
     val_label_dir = os.path.join(validation_dir, label)
     if not os.path.exists(train_label_dir):
         os.makedirs(train_label_dir)
-    if not os.path.exists(val_label_dir):
-        os.makedirs(val_label_dir)
-
-    # Split the data into a training and validation set.
-    x_train, x_val = train_test_split(file_list, test_size=validation_size)
 
     # Download training files.
-    for file in x_train:
+    for file in file_list:
         _, file_extension = os.path.splitext(file)
         filename = os.path.join(train_label_dir, uuid.uuid4().hex + file_extension)
-        print('saving: {}'.format(file))
-        print('to: {}'.format(filename))
-        cos.Object(credentials_1['bucket'], file).download_file(filename)
-
-    # Download validation files.
-    for file in x_val:
-        _, file_extension = os.path.splitext(file)
-        filename = os.path.join(val_label_dir, uuid.uuid4().hex + file_extension)
         print('saving: {}'.format(file))
         print('to: {}'.format(filename))
         cos.Object(credentials_1['bucket'], file).download_file(filename)
@@ -238,16 +218,13 @@ checkpoint = ModelCheckpoint(
 )
 
 all_callbacks = [checkpoint, cos_persist]
-train_steps = 2 * train_generator.samples / train_generator.batch_size
-val_steps = 2 * validation_generator.samples / validation_generator.batch_size
+train_steps = train_generator.samples // train_generator.batch_size
 
 # Train the model
 history = model.fit_generator(
     train_generator,
     steps_per_epoch=train_steps,
     epochs=EPOCHS,
-    validation_data=validation_generator,
-    validation_steps=val_steps,
     callbacks=None,
     verbose=1
 )
