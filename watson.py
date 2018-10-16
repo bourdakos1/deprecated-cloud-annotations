@@ -6,11 +6,11 @@ import types
 import time
 import pandas as pd
 import json
-import tqdm
 import itertools
 import ibm_boto3
 from botocore.client import Config
 from watson_developer_cloud import VisualRecognitionV3, WatsonApiException
+from tqdm import tqdm
 from dotenv import load_dotenv
 load_dotenv()
 
