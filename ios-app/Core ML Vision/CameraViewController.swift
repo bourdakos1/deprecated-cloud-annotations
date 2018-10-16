@@ -79,7 +79,7 @@ class CameraViewController: UIViewController {
     }()
     
     var editedImage = UIImage()
-//    var originalConfs = [ClassResult]()
+    var originalConfs = [VNClassificationObservation]()
     var heatmaps = [String: HeatmapImages]()
     
     override func viewDidLoad() {
@@ -125,6 +125,92 @@ class CameraViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.push(results: classifications)
+            }
+            
+            self.originalConfs = classifications
+        }
+    }
+    
+    func startAnalysis(classToAnalyze: String, localThreshold: Double = 0.0) {
+        if let heatmapImages = heatmaps[classToAnalyze] {
+            heatmapView.image = heatmapImages.heatmap
+            outlineView.image = heatmapImages.outline
+            return
+        }
+        
+        var confidences = [[Double]](repeating: [Double](repeating: -1, count: 17), count: 17)
+        
+        DispatchQueue.main.async {
+            SwiftSpinner.show("analyzing")
+        }
+        
+        let chosenClasses = originalConfs.filter({ return $0.identifier == classToAnalyze })
+        guard let chosenClass = chosenClasses.first else {
+            return
+        }
+        let originalConf = Double(chosenClass.confidence)
+        
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.enter()
+        
+        DispatchQueue.global(qos: .background).async {
+            for down in 0 ..< 11 {
+                for right in 0 ..< 11 {
+                    confidences[down + 3][right + 3] = 0
+                    dispatchGroup.enter()
+                    let maskedImage = self.maskImage(image: self.editedImage, at: CGPoint(x: right, y: down))
+                    guard let cgImage = maskedImage.cgImage else {
+                        return
+                    }
+                    CloudVision.classify(image: cgImage, bucketId: CloudVisionConstants.bucketId) { [down, right] classifications, _ in
+                        
+                        defer { dispatchGroup.leave() }
+                        
+                        // Make sure that an image was successfully classified.
+                        guard let classifications = classifications else {
+                            return
+                        }
+                        
+                        let usbClass = classifications.filter({ return $0.identifier == classToAnalyze })
+                        
+                        guard let usbClassSingle = usbClass.first else {
+                                return
+                        }
+                        
+                        let score = Double(usbClassSingle.confidence)
+                        
+                        print(".", terminator:"")
+                        
+                        confidences[down + 3][right + 3] = score
+                    }
+                }
+            }
+            dispatchGroup.leave()
+            
+            dispatchGroup.notify(queue: .main) {
+                print()
+                print(confidences)
+                
+                guard let image = self.imageView.image else {
+                    return
+                }
+                
+                let heatmap = self.calculateHeatmap(confidences, originalConf)
+                let heatmapImage = self.renderHeatmap(heatmap, color: .black, size: image.size)
+                let outlineImage = self.renderOutline(heatmap, size: image.size)
+                
+                let heatmapImages = HeatmapImages(heatmap: heatmapImage, outline: outlineImage)
+                self.heatmaps[classToAnalyze] = heatmapImages
+                
+                self.heatmapView.image = heatmapImage
+                self.outlineView.image = outlineImage
+                self.heatmapView.alpha = CGFloat(self.alphaSlider.value)
+                
+                self.heatmapView.isHidden = false
+                self.outlineView.isHidden = false
+                self.alphaSlider.isHidden = false
+                
+                SwiftSpinner.hide()
             }
         }
     }
@@ -320,7 +406,7 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
 
 extension CameraViewController: TableViewControllerSelectionDelegate {
     func didSelectItem(_ name: String) {
-//        startAnalysis(classToAnalyze: name)
+        startAnalysis(classToAnalyze: name)
     }
 }
 
