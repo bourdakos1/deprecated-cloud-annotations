@@ -113,7 +113,7 @@ with open(mlmodel_path, 'wb') as fp:
     fp.write(core_ml_model.content)
 
 print('uploading model...')
-cos.Bucket(bucket).upload_file(
+cos.Bucket(credentials_1['bucket']).upload_file(
     mlmodel_path,
     mlmodel_path
 )
