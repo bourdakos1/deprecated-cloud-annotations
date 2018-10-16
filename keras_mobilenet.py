@@ -1,3 +1,8 @@
+from numpy.random import seed
+seed(1)
+from tensorflow import set_random_seed
+set_random_seed(1)
+
 # @hidden_cell
 import os
 import uuid
