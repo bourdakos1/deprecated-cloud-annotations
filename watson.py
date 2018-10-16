@@ -81,10 +81,18 @@ for label in used_labels:
         cos.Object(credentials_1['bucket'], file).download_file(filename)
 
     # Create zip files.
-    shutil.make_archive(label, 'zip', train_label_dir)
+    shutil.make_archive(os.path.join('zips', label), 'zip', train_label_dir)
 print('done')
 
 
 ################################################################################
 # Train model
 ################################################################################
+visual_recognition = VisualRecognitionV3(
+    '2018-03-19',
+    iam_apikey=os.getenv('WATSON_API_KEY')
+)
+
+filedata = {filename + '_positive_examples': open(filename, 'rb') for filename in os.listdir('zips')}
+model = visual_recognition.create_classifier('dogs', **filedata).get_result()
+print(json.dumps(model, indent=2))
