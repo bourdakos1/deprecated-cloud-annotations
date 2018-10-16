@@ -97,7 +97,7 @@ IMG_WIDTH, IMG_HEIGHT = 224, 224
 EPOCHS = 20
 BATCH_SIZE = 50
 TRAINABLE_LAYERS = 6
-LEARNING_RATE = 0.0005
+LEARNING_RATE = 0.0001
 
 
 ################################################################################
