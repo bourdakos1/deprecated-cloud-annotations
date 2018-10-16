@@ -94,10 +94,10 @@ credentials_1 = {
 # Hyperparameters
 ################################################################################
 IMG_WIDTH, IMG_HEIGHT = 224, 224
-EPOCHS = 30
+EPOCHS = 20
 BATCH_SIZE = 50
 TRAINABLE_LAYERS = 0
-LEARNING_RATE = 0.0005
+LEARNING_RATE = 0.001
 
 
 ################################################################################
@@ -187,8 +187,9 @@ x = mobile.output
 x = GlobalAveragePooling2D()(x)
 x = Reshape((1, 1, 1024))(x)
 x = Dropout(0.01)(x)
-x = Conv2D(1024, (1, 1), activation='relu', padding='same')(x)
-x = Dense(len(used_labels), activation='softmax')(x)
+# x = Conv2D(1024, (1, 1), activation='relu', padding='same')(x)
+x = Conv2D(len(used_labels), (1, 1), activation='softmax', padding='same')(x)
+# x = Dense(len(used_labels), activation='softmax')(x)
 predictions = Reshape((len(used_labels),))(x)
 
 model = Model(inputs=mobile.input, outputs=predictions)
