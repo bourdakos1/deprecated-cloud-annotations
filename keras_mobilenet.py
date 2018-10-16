@@ -4,8 +4,9 @@ import uuid
 import shutil
 import types
 import pandas as pd
-import ibm_boto3
 import keras
+import argparse
+import ibm_boto3
 from botocore.client import Config
 from keras.applications.mobilenet import MobileNet, preprocess_input
 from keras.preprocessing.image import ImageDataGenerator
@@ -18,6 +19,15 @@ from keras.utils.generic_utils import CustomObjectScope
 from coremltools.converters.keras import convert
 from dotenv import load_dotenv
 load_dotenv()
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '-c',
+    '--cache',
+    help='Use the existing train folder, if one exists.',
+    action='store_true'
+)
+args = parser.parse_args()
 
 def __iter__(self): return 0
 def pandas_support(csv):
@@ -109,38 +119,38 @@ for bucket in cos.buckets.all():
 ################################################################################
 # Prepare dataset
 ################################################################################
-# Get csv of annotations (url, label).
-annotations = cos.Object(credentials_1['bucket'], '_annotations.csv').get()['Body']
-annotations = pandas_support(annotations)
-annotations_df = pd.read_csv(annotations, header=None)
-annotations_df = annotations_df.set_index([1])
-
-# Create a training folder.
 train_dir = 'train'
 
-# Purge data if directories already exist.
-if os.path.exists(train_dir) and os.path.isdir(train_dir):
-    shutil.rmtree(train_dir)
+if not args.cache or not os.path.exists(train_dir) or not os.path.isdir(train_dir):
+    # Purge data if directories already exist.
+    if os.path.exists(train_dir) and os.path.isdir(train_dir):
+        shutil.rmtree(train_dir)
 
-os.mkdir(train_dir)
+    os.mkdir(train_dir)
 
-used_labels = annotations_df.index.unique().tolist()
-for label in used_labels:
-    file_list = annotations_df.loc[label].values.flatten()
+    # Get csv of annotations (url, label).
+    annotations = cos.Object(credentials_1['bucket'], '_annotations.csv').get()['Body']
+    annotations = pandas_support(annotations)
+    annotations_df = pd.read_csv(annotations, header=None)
+    annotations_df = annotations_df.set_index([1])
 
-    # Make directory for labels, if they don't exist.
-    train_label_dir = os.path.join(train_dir, label)
-    if not os.path.exists(train_label_dir):
-        os.makedirs(train_label_dir)
+    used_labels = annotations_df.index.unique().tolist()
+    for label in used_labels:
+        file_list = annotations_df.loc[label].values.flatten()
 
-    # Download training files.
-    for file in file_list:
-        _, file_extension = os.path.splitext(file)
-        filename = os.path.join(train_label_dir, uuid.uuid4().hex + file_extension)
-        print('saving: {}'.format(file))
-        print('to: {}'.format(filename))
-        cos.Object(credentials_1['bucket'], file).download_file(filename)
-print('done')
+        # Make directory for labels, if they don't exist.
+        train_label_dir = os.path.join(train_dir, label)
+        if not os.path.exists(train_label_dir):
+            os.makedirs(train_label_dir)
+
+        # Download training files.
+        for file in file_list:
+            _, file_extension = os.path.splitext(file)
+            filename = os.path.join(train_label_dir, uuid.uuid4().hex + file_extension)
+            print('saving: {}'.format(file))
+            print('to: {}'.format(filename))
+            cos.Object(credentials_1['bucket'], file).download_file(filename)
+    print('done')
 
 def subtract_mean(x):
     x[:,:,0] -= 123
