@@ -97,7 +97,7 @@ IMG_WIDTH, IMG_HEIGHT = 224, 224
 EPOCHS = 20
 BATCH_SIZE = 50
 TRAINABLE_LAYERS = 0
-LEARNING_RATE = 0.0032
+LEARNING_RATE = 0.02
 
 
 ################################################################################
@@ -180,8 +180,12 @@ mobile = MobileNet(weights='imagenet', include_top=False, input_shape=(224, 224,
 mobile.summary()
 
 # Freeze the layers except the last layers
-for layer in mobile.layers:
-    layer.trainable = False
+if TRAINABLE_LAYERS == 0:
+    for layer in mobile.layers:
+        layer.trainable = False
+else:
+    for layer in mobile.layers[:-TRAINABLE_LAYERS]:
+        layer.trainable = False
 
 x = mobile.output
 x = GlobalAveragePooling2D()(x)
