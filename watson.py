@@ -104,4 +104,17 @@ while True:
     print(classifier['status'])
     if classifier['status'] == 'ready':
         break
-    time.sleep(30)
+    time.sleep(10)
+
+core_ml_model = visual_recognition.get_core_ml_model(classifier_id=model['classifier_id']).get_result()
+
+mlmodel_path = credentials_1['bucket'] + '.mlmodel'
+with open(mlmodel_path, 'wb') as fp:
+    fp.write(core_ml_model.content)
+
+print('uploading model...')
+cos.Bucket(bucket).upload_file(
+    mlmodel_path,
+    mlmodel_path
+)
+print('done')
