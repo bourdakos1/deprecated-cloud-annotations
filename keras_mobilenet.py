@@ -185,7 +185,7 @@ if TRAINABLE_LAYERS == 0:
         layer.trainable = False
 else:
     for layer in mobile.layers[:-TRAINABLE_LAYERS]:
-        console.log(layer.name)
+        print(layer.name)
         layer.trainable = False
 
 x = mobile.output
