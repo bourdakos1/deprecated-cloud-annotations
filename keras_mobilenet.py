@@ -97,7 +97,7 @@ IMG_WIDTH, IMG_HEIGHT = 224, 224
 EPOCHS = 20
 BATCH_SIZE = 50
 TRAINABLE_LAYERS = 9
-LEARNING_RATE = 0.0019
+LEARNING_RATE = 0.003
 
 
 ################################################################################
@@ -185,7 +185,6 @@ if TRAINABLE_LAYERS == 0:
         layer.trainable = False
 else:
     for layer in mobile.layers[:-TRAINABLE_LAYERS]:
-        print(layer.name)
         layer.trainable = False
 
 x = mobile.output
