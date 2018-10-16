@@ -102,6 +102,6 @@ print(model['classifier_id'])
 while True:
     classifier = visual_recognition.get_classifier(classifier_id=model['classifier_id']).get_result()
     print(classifier['status'])
-    if classifier['status'] == ready:
+    if classifier['status'] == 'ready':
         break
     time.sleep(30)
