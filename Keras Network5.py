@@ -17,6 +17,8 @@ from keras.callbacks import Callback
 from keras.callbacks import ModelCheckpoint
 from keras.utils.generic_utils import CustomObjectScope
 from coremltools.converters.keras import convert
+from dotenv import load_dotenv
+load_dotenv()
 
 def __iter__(self): return 0
 def pandas_support(csv):
@@ -61,7 +63,13 @@ class COSCheckpoint(Callback):
 ################################################################################
 # Credentials
 ################################################################################
-
+credentials_1 = {
+  'bucket': os.getenv('BUCKET'),
+  'iam_url': 'https://iam.ng.bluemix.net/oidc/token',
+  'api_key': os.getenv('API_KEY'),
+  'resource_instance_id': os.getenv('RESOURCE_INSTANCE_ID'),
+  'url': 'https://s3-api.us-geo.objectstorage.service.networklayer.com'
+}
 
 
 ################################################################################
