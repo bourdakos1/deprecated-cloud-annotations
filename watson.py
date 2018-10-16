@@ -6,6 +6,8 @@ import types
 import time
 import pandas as pd
 import json
+import tqdm
+import itertools
 import ibm_boto3
 from botocore.client import Config
 from watson_developer_cloud import VisualRecognitionV3, WatsonApiException
@@ -65,10 +67,12 @@ if os.path.exists(train_dir) and os.path.isdir(train_dir):
 
 os.mkdir(train_dir)
 
+file_count = 0
+
 used_labels = annotations_df.index.unique().tolist()
 for label in used_labels:
     file_list = annotations_df.loc[label].values.flatten()
-
+    file_count = file_count + len(file_list)
     # Make directory for labels, if they don't exist.
     train_label_dir = os.path.join(train_dir, label)
     if not os.path.exists(train_label_dir):
@@ -99,12 +103,16 @@ filedata = {filename + '_positive_examples': open(filename, 'rb') for filename i
 model = visual_recognition.create_classifier(credentials_1['bucket'], **filedata).get_result()
 print(model['classifier_id'])
 
-while True:
-    classifier = visual_recognition.get_classifier(classifier_id=model['classifier_id']).get_result()
-    print(classifier['status'])
-    if classifier['status'] == 'ready':
-        break
-    time.sleep(10)
+estimatedTime = file_count * 10
+pbar = tqdm(total=estimatedTime)
+for i in itertools.count():
+    if i % 20 == 0:
+        classifier = visual_recognition.get_classifier(classifier_id=model['classifier_id']).get_result()
+        if classifier['status'] == 'ready':
+            break
+    pbar.update(1)
+    time.sleep(1)
+pbar.close()
 
 core_ml_model = visual_recognition.get_core_ml_model(classifier_id=model['classifier_id']).get_result()
 
