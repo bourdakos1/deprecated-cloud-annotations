@@ -3,7 +3,9 @@ import os
 import uuid
 import shutil
 import types
+import time
 import pandas as pd
+import json
 import ibm_boto3
 from botocore.client import Config
 from watson_developer_cloud import VisualRecognitionV3, WatsonApiException
@@ -94,5 +96,12 @@ visual_recognition = VisualRecognitionV3(
 )
 
 filedata = {filename + '_positive_examples': open(filename, 'rb') for filename in os.listdir('zips')}
-model = visual_recognition.create_classifier('dogs', **filedata).get_result()
-print(json.dumps(model, indent=2))
+model = visual_recognition.create_classifier(credentials_1['bucket'], **filedata).get_result()
+print(model['classifier_id')
+
+while True:
+    classifier = visual_recognition.get_classifier(classifier_id=model['classifier_id').get_result()
+    print(json['status'])
+    if json['status'] === ready:
+        break
+    time.sleep(30)
