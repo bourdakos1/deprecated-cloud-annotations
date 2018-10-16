@@ -1,0 +1,259 @@
+# @hidden_cell
+import os
+import uuid
+import shutil
+import types
+import pandas as pd
+import ibm_boto3
+import keras
+from sklearn.model_selection import train_test_split
+from botocore.client import Config
+from keras.applications.mobilenet import MobileNet, preprocess_input
+from keras.preprocessing.image import ImageDataGenerator
+from keras import optimizers
+from keras.models import Model
+from keras.layers import Conv2D, Reshape, Activation, GlobalAveragePooling2D, Dense, Dropout
+from keras.callbacks import Callback
+from keras.callbacks import ModelCheckpoint
+from keras.utils.generic_utils import CustomObjectScope
+from coremltools.converters.keras import convert
+
+def __iter__(self): return 0
+def pandas_support(csv):
+    # add missing __iter__ method, so pandas accepts body as file-like object
+    if not hasattr(csv, "__iter__"): csv.__iter__ = types.MethodType( __iter__, csv )
+    return csv
+
+class COSCheckpoint(Callback):
+    def __init__(self, cos_resource, bucket, path_local, mlmodel_path, class_labels):
+        self.cos_resource = cos_resource
+        self.bucket = bucket
+        self.path_local = path_local
+        self.mlmodel_path = mlmodel_path
+        self.class_labels = class_labels
+        self.last_change = None
+
+    def on_epoch_end(self, *args):
+        epoch_nr, logs = args
+
+        if os.path.getmtime(self.path_local) != self.last_change:
+            with CustomObjectScope({'relu6': keras.applications.mobilenet.relu6,'DepthwiseConv2D': keras.applications.mobilenet.DepthwiseConv2D}):
+                coreml_model = convert(
+                    self.path_local,
+                    input_names = 'image',
+                    image_input_names = 'image',
+                    class_labels = self.class_labels
+                )
+
+                coreml_model.save(self.mlmodel_path)
+
+                print('uploading model...')
+                self.cos_resource.Bucket(self.bucket).upload_file(
+                    self.mlmodel_path,
+                    self.mlmodel_path
+                )
+                print('done')
+                self.last_change = os.path.getmtime(self.path_local)
+        else:
+            print('model didn\'t improve - no upload')
+
+
+################################################################################
+# Credentials
+################################################################################
+
+
+
+################################################################################
+# Hyperparameters
+################################################################################
+IMG_WIDTH, IMG_HEIGHT = 224, 224
+EPOCHS = 20
+BATCH_SIZE = 50
+TRAINABLE_LAYERS = 0
+
+
+################################################################################
+# Initialize Cloud Object Storage
+################################################################################
+cos = ibm_boto3.resource('s3',
+    ibm_api_key_id=credentials_1['api_key'],
+    ibm_service_instance_id=credentials_1['resource_instance_id'],
+    ibm_auth_endpoint=credentials_1['iam_url'],
+    config=Config(signature_version='oauth'),
+    endpoint_url=credentials_1['url']
+)
+
+# List available buckets.
+for bucket in cos.buckets.all():
+    print(bucket.name)
+
+
+################################################################################
+# Prepare dataset
+################################################################################
+# Get csv of annotations (url, label).
+annotations = cos.Object(credentials_1['bucket'], '_annotations.csv').get()['Body']
+annotations = pandas_support(annotations)
+annotations_df = pd.read_csv(annotations, header=None)
+annotations_df = annotations_df.set_index([1])
+
+# Create a training and validation folder.
+train_dir = 'train'
+validation_dir = 'val'
+validation_size = 0.17
+
+# Purge data if directories already exist.
+if os.path.exists(train_dir) and os.path.isdir(train_dir):
+    shutil.rmtree(train_dir)
+
+if os.path.exists(validation_dir) and os.path.isdir(validation_dir):
+    shutil.rmtree(validation_dir)
+
+os.mkdir(train_dir)
+os.mkdir(validation_dir)
+
+used_labels = annotations_df.index.unique().tolist()
+for label in used_labels:
+    file_list = annotations_df.loc[label].values.flatten()
+
+    # Make directory for labels, if they don't exist.
+    train_label_dir = os.path.join(train_dir, label)
+    val_label_dir = os.path.join(validation_dir, label)
+    if not os.path.exists(train_label_dir):
+        os.makedirs(train_label_dir)
+    if not os.path.exists(val_label_dir):
+        os.makedirs(val_label_dir)
+
+    # Split the data into a training and validation set.
+    x_train, x_val = train_test_split(file_list, test_size=validation_size)
+
+    # Download training files.
+    for file in x_train:
+        _, file_extension = os.path.splitext(file)
+        filename = os.path.join(train_label_dir, uuid.uuid4().hex + file_extension)
+        print('saving: {}'.format(file))
+        print('to: {}'.format(filename))
+        cos.Object(credentials_1['bucket'], file).download_file(filename)
+
+    # Download validation files.
+    for file in x_val:
+        _, file_extension = os.path.splitext(file)
+        filename = os.path.join(val_label_dir, uuid.uuid4().hex + file_extension)
+        print('saving: {}'.format(file))
+        print('to: {}'.format(filename))
+        cos.Object(credentials_1['bucket'], file).download_file(filename)
+print('done')
+
+def subtract_mean(x):
+    x[:,:,0] -= 123
+    x[:,:,1] -= 117
+    x[:,:,2] -= 104
+    return preprocess_input(x)
+
+datagen = ImageDataGenerator(
+    horizontal_flip=True,
+    preprocessing_function=subtract_mean
+)
+
+train_generator = datagen.flow_from_directory(
+    train_dir,
+    target_size=(IMG_WIDTH, IMG_HEIGHT),
+    batch_size=BATCH_SIZE
+)
+
+validation_generator = datagen.flow_from_directory(
+    validation_dir,
+    target_size=(IMG_WIDTH, IMG_HEIGHT),
+    batch_size=BATCH_SIZE
+)
+
+
+################################################################################
+# Build model
+################################################################################
+mobile = MobileNet(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+mobile.summary()
+
+# Freeze the layers except the last layers
+for layer in mobile.layers[:-TRAINABLE_LAYERS]:
+    layer.trainable = False
+
+x = mobile.output
+x = GlobalAveragePooling2D()(x)
+x = Reshape((1, 1, 1024))(x)
+x = Dropout(0.01)(x)
+x = Conv2D(1024, (1, 1), activation='relu', padding='same')(x)
+x = Dense(len(used_labels), activation='softmax')(x)
+predictions = Reshape((len(used_labels),))(x)
+
+model = Model(inputs=mobile.input, outputs=predictions)
+model.summary()
+
+adm = optimizers.Adam(lr=0.001)
+
+# Compile the model
+model.compile(
+    optimizer=adm,
+    loss='categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+
+################################################################################
+# Train model
+################################################################################
+base_path = credentials_1['bucket']
+model_local_path = base_path + '.h5'
+mlmodel_path = base_path + '.mlmodel'
+
+cos_persist = COSCheckpoint(
+    cos_resource=cos,
+    bucket=credentials_1['bucket'],
+    path_local=model_local_path,
+    mlmodel_path=mlmodel_path,
+    class_labels=used_labels
+)
+
+checkpoint = ModelCheckpoint(
+    model_local_path,
+    monitor='val_loss',
+    verbose=1,
+    save_best_only=True,
+    mode='min'
+)
+
+all_callbacks = [checkpoint, cos_persist]
+
+# Train the model
+history = model.fit_generator(
+    train_generator,
+    steps_per_epoch=(2 * train_generator.samples)/train_generator.batch_size,
+    epochs=EPOCHS,
+    validation_data=validation_generator,
+    validation_steps=(2 * validation_generator.samples)/validation_generator.batch_size,
+    # callbacks=all_callbacks,
+    verbose=1
+)
+
+model.save(model_local_path)
+
+with CustomObjectScope({'relu6': keras.applications.mobilenet.relu6,'DepthwiseConv2D': keras.applications.mobilenet.DepthwiseConv2D}):
+    coreml_model = convert(
+        model_local_path,
+        input_names='image',
+        image_input_names='image',
+        red_bias=-123,
+        green_bias=-117,
+        blue_bias=-104,
+        class_labels=sorted(used_labels)
+    )
+
+    coreml_model.save(mlmodel_path)
+
+    print('uploading model...')
+    cos.Bucket(credentials_1['bucket']).upload_file(
+        mlmodel_path,
+        mlmodel_path
+    )
+    print('done')
