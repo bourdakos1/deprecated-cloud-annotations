@@ -18,6 +18,12 @@ import UIKit
 import AVFoundation
 import Vision
 
+struct CloudVisionConstants {
+    static let bucketId = "BUCKET_ID"
+    static let modelBranch = "master"
+    static let endpoint = "s3-api.us-geo.objectstorage.softlayer.net"
+}
+
 class CameraViewController: UIViewController {
 
     // MARK: - IBOutlets
@@ -35,6 +41,18 @@ class CameraViewController: UIViewController {
     @IBOutlet weak var alphaSlider: UISlider!
     
     // MARK: - Variable Declarations
+    
+    let cloudVision: CloudVision = {
+        guard let path = Bundle.main.path(forResource: "Credentials", ofType: "plist") else {
+            // Please create a Credentials.plist file with your Object Storage credentials.
+            fatalError()
+        }
+        guard let apiKey = NSDictionary(contentsOfFile: path)?["apikey"] as? String else {
+            // No Object Storage API key found. Make sure you add your API key to the Credentials.plist file.
+            fatalError()
+        }
+        return CloudVision(endpoint: CloudVisionConstants.endpoint, apiKey: apiKey)
+    }()
     
     let photoOutput = AVCapturePhotoOutput()
     lazy var captureSession: AVCaptureSession? = {
@@ -76,6 +94,16 @@ class CameraViewController: UIViewController {
             return
         }
         drawer.delegate = self
+        
+        SwiftSpinner.show("Compiling model...")
+        cloudVision.downloadModel(bucketId: CloudVisionConstants.bucketId, modelBranch: CloudVisionConstants.modelBranch) { _, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.modelUpdateFail(bucketId: CloudVisionConstants.bucketId, error: error)
+                }
+                SwiftSpinner.hide()
+            }
+        }
     }
     
     // MARK: - Image Classification
@@ -85,128 +113,21 @@ class CameraViewController: UIViewController {
         
         showResultsUI(for: image)
         
-        var classificationRequest: VNCoreMLRequest = {
-            do {
-                let model = try VNCoreMLModel(for: beerworkshop_donotdelete_pr_xuqjgrtmojawuq__21__1().model)
-                
-                let request = VNCoreMLRequest(model: model, completionHandler: { [weak self] request, error in
-                    DispatchQueue.main.async {
-                        guard let results = request.results else {
-                            print("Unable to classify image.\n\(error!.localizedDescription)")
-                            return
-                        }
-                        // The `results` will always be `VNClassificationObservation`s, as specified by the Core ML model in this project.
-                        let classifications = results as! [VNClassificationObservation]
-                        
-                        if classifications.isEmpty {
-                            print("Nothing recognized.")
-                        } else {
-                            self?.push(results: classifications)
-                        }
-                    }
-                })
-                request.imageCropAndScaleOption = .centerCrop
-                return request
-            } catch {
-                fatalError("Failed to load Vision ML model: \(error)")
-            }
-        }()
+        guard let cgImage = editedImage.cgImage else {
+            return
+        }
         
-        DispatchQueue.global(qos: .userInitiated).async {
-            let handler = VNImageRequestHandler(cgImage: image.cgImage!)
-            do {
-                try handler.perform([classificationRequest])
-            } catch {
-                /*
-                 This handler catches general image processing errors. The `classificationRequest`'s
-                 completion handler `processClassifications(_:error:)` catches errors specific
-                 to processing that request.
-                 */
-                print("Failed to perform classification.\n\(error.localizedDescription)")
+        CloudVision.classify(image: cgImage, bucketId: CloudVisionConstants.bucketId) { classifications, error in
+            // Make sure that an image was successfully classified.
+            guard let classifications = classifications else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.push(results: classifications)
             }
         }
     }
-    
-//    func startAnalysis(classToAnalyze: String, localThreshold: Double = 0.0) {
-//        if let heatmapImages = heatmaps[classToAnalyze] {
-//            heatmapView.image = heatmapImages.heatmap
-//            outlineView.image = heatmapImages.outline
-//            return
-//        }
-//
-//        var confidences = [[Double]](repeating: [Double](repeating: -1, count: 17), count: 17)
-//
-//        DispatchQueue.main.async {
-//            SwiftSpinner.show("analyzing")
-//        }
-//
-//        let chosenClasses = originalConfs.filter({ return $0.className == classToAnalyze })
-//        guard let chosenClass = chosenClasses.first,
-//            let originalConf = chosenClass.score else {
-//                return
-//        }
-//
-//        let dispatchGroup = DispatchGroup()
-//        dispatchGroup.enter()
-//
-//        DispatchQueue.global(qos: .background).async {
-//            for down in 0 ..< 11 {
-//                for right in 0 ..< 11 {
-//                    confidences[down + 3][right + 3] = 0
-//                    dispatchGroup.enter()
-//                    let maskedImage = self.maskImage(image: self.editedImage, at: CGPoint(x: right, y: down))
-//                    self.visualRecognition.classifyWithLocalModel(image: maskedImage, classifierIDs: VisualRecognitionConstants.modelIds, threshold: localThreshold, failure: nil) { [down, right] classifiedImages in
-//
-//                        defer { dispatchGroup.leave() }
-//
-//                        // Make sure that an image was successfully classified.
-//                        guard let classifiedImage = classifiedImages.images.first,
-//                            let classifier = classifiedImage.classifiers.first else {
-//                                return
-//                        }
-//
-//                        let usbClass = classifier.classes.filter({ return $0.className == classToAnalyze })
-//
-//                        guard let usbClassSingle = usbClass.first,
-//                            let score = usbClassSingle.score else {
-//                                return
-//                        }
-//
-//                        print(".", terminator:"")
-//
-//                        confidences[down + 3][right + 3] = score
-//                    }
-//                }
-//            }
-//            dispatchGroup.leave()
-//
-//            dispatchGroup.notify(queue: .main) {
-//                print()
-//                print(confidences)
-//
-//                guard let image = self.imageView.image else {
-//                    return
-//                }
-//
-//                let heatmap = self.calculateHeatmap(confidences, originalConf)
-//                let heatmapImage = self.renderHeatmap(heatmap, color: .black, size: image.size)
-//                let outlineImage = self.renderOutline(heatmap, size: image.size)
-//
-//                let heatmapImages = HeatmapImages(heatmap: heatmapImage, outline: outlineImage)
-//                self.heatmaps[classToAnalyze] = heatmapImages
-//
-//                self.heatmapView.image = heatmapImage
-//                self.outlineView.image = outlineImage
-//                self.heatmapView.alpha = CGFloat(self.alphaSlider.value)
-//
-//                self.heatmapView.isHidden = false
-//                self.outlineView.isHidden = false
-//                self.alphaSlider.isHidden = false
-//
-//                SwiftSpinner.hide()
-//            }
-//        }
-//    }
     
     func maskImage(image: UIImage, at point: CGPoint) -> UIImage {
         let size = image.size
@@ -336,7 +257,7 @@ extension CameraViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-    func modelUpdateFail(modelId: String, error: Error) {
+    func modelUpdateFail(bucketId: String, error: Error) {
         let error = error as NSError
         var errorMessage = ""
         
@@ -346,9 +267,9 @@ extension CameraViewController {
         
         switch error.code {
         case 0:
-            errorMessage = "Please check your Visual Recognition API key in `Credentials.plist` and try again."
+            errorMessage = "Please check your Object Storage API key in `Credentials.plist` and try again."
         case 404:
-            errorMessage = "We couldn't find the model with ID: \"\(modelId)\""
+            errorMessage = "We couldn't find a bucket with ID: \"\(bucketId)\""
         case 500:
             errorMessage = "Internal server error. Please try again."
         case -1009:

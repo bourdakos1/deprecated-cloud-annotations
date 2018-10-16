@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		23074FB4217667FF00F43ECA /* CloudVision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23074FB3217667FF00F43ECA /* CloudVision.swift */; };
 		237A0D5721274ABE003FA1F9 /* CameraViewController+Heatmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237A0D5621274ABE003FA1F9 /* CameraViewController+Heatmap.swift */; };
 		23B0A77920A3888B00D02B06 /* UIViewController+PulleyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B0A77820A3888B00D02B06 /* UIViewController+PulleyViewController.swift */; };
 		23B0A77B20A3A7FB00D02B06 /* Credentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 23B0A77A20A3A7FB00D02B06 /* Credentials.plist */; };
@@ -38,6 +39,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		23074FB3217667FF00F43ECA /* CloudVision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudVision.swift; sourceTree = "<group>"; };
 		237A0D5621274ABE003FA1F9 /* CameraViewController+Heatmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraViewController+Heatmap.swift"; sourceTree = "<group>"; };
 		23B0A77820A3888B00D02B06 /* UIViewController+PulleyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PulleyViewController.swift"; sourceTree = "<group>"; };
 		23B0A77A20A3A7FB00D02B06 /* Credentials.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Credentials.plist; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				23B0A77A20A3A7FB00D02B06 /* Credentials.plist */,
 				2DC5F13C1FD609050063B2D5 /* ResultsTableViewController.swift */,
 				2DC5F13E1FD6093B0063B2D5 /* ResultsTableViewCell.swift */,
+				23074FB3217667FF00F43ECA /* CloudVision.swift */,
 			);
 			path = "Core ML Vision";
 			sourceTree = "<group>";
@@ -197,6 +200,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23074FB4217667FF00F43ECA /* CloudVision.swift in Sources */,
 				23CC92B320A1530F00F70DDC /* ProgressBar.swift in Sources */,
 				2DC5F13D1FD609050063B2D5 /* ResultsTableViewController.swift in Sources */,
 				2DC5F13F1FD6093B0063B2D5 /* ResultsTableViewCell.swift in Sources */,

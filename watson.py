@@ -103,10 +103,11 @@ filedata = {filename + '_positive_examples': open(filename, 'rb') for filename i
 model = visual_recognition.create_classifier(credentials_1['bucket'], **filedata).get_result()
 print(model['classifier_id'])
 
-estimatedTime = file_count * 7
-pbar = tqdm(total=estimatedTime)
+estimatedTime = file_count * 6
+estimatedTimeBuffer = file_count * 7
+pbar = tqdm(total=estimatedTimeBuffer)
 for i in itertools.count():
-    if i % 20 == 0:
+    if i > estimatedTime and i % 30 == 0:
         classifier = visual_recognition.get_classifier(classifier_id=model['classifier_id']).get_result()
         if classifier['status'] == 'ready':
             break
