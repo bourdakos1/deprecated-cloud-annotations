@@ -111,10 +111,6 @@ cos = ibm_boto3.resource('s3',
     endpoint_url=credentials_1['url']
 )
 
-# List available buckets.
-for bucket in cos.buckets.all():
-    print(bucket.name)
-
 
 ################################################################################
 # Prepare dataset
@@ -133,6 +129,10 @@ if not args.cache or not os.path.exists(train_dir) or not os.path.isdir(train_di
     # Purge data if directories already exist.
     if os.path.exists(train_dir) and os.path.isdir(train_dir):
         shutil.rmtree(train_dir)
+        if args.cache:
+            print('No {} directory found.\ndownloading bucket...'.format(train_dir))
+        else:
+            print('Note: Try using the `--cache` flag to avoid redownloading the bucket.')
 
     os.mkdir(train_dir)
 
@@ -152,6 +152,8 @@ if not args.cache or not os.path.exists(train_dir) or not os.path.isdir(train_di
             print('to: {}'.format(filename))
             cos.Object(credentials_1['bucket'], file).download_file(filename)
     print('done')
+else:
+    print('Using cached data...')
 
 def subtract_mean(x):
     x[:,:,0] -= 123
