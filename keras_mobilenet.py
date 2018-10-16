@@ -135,7 +135,6 @@ for label in used_labels:
 
     # Make directory for labels, if they don't exist.
     train_label_dir = os.path.join(train_dir, label)
-    val_label_dir = os.path.join(validation_dir, label)
     if not os.path.exists(train_label_dir):
         os.makedirs(train_label_dir)
 
