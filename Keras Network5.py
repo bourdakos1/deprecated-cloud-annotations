@@ -79,6 +79,7 @@ IMG_WIDTH, IMG_HEIGHT = 224, 224
 EPOCHS = 20
 BATCH_SIZE = 50
 TRAINABLE_LAYERS = 0
+LEARNING_RATE = 0.001
 
 
 ################################################################################
@@ -198,7 +199,7 @@ predictions = Reshape((len(used_labels),))(x)
 model = Model(inputs=mobile.input, outputs=predictions)
 model.summary()
 
-adm = optimizers.Adam(lr=0.001)
+adm = optimizers.Adam(lr=LEARNING_RATE)
 
 # Compile the model
 model.compile(
