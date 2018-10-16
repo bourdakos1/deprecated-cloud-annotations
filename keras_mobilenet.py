@@ -227,7 +227,7 @@ checkpoint = ModelCheckpoint(
 )
 
 all_callbacks = [checkpoint, cos_persist]
-train_steps = train_generator.samples / train_generator.batch_size
+train_steps = 2 * train_generator.samples / train_generator.batch_size
 
 # Train the model
 history = model.fit_generator(
