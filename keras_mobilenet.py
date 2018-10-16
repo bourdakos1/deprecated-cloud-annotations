@@ -164,12 +164,6 @@ train_generator = datagen.flow_from_directory(
     batch_size=BATCH_SIZE
 )
 
-validation_generator = datagen.flow_from_directory(
-    validation_dir,
-    target_size=(IMG_WIDTH, IMG_HEIGHT),
-    batch_size=BATCH_SIZE
-)
-
 
 ################################################################################
 # Build model
@@ -215,7 +209,7 @@ cos_persist = COSCheckpoint(
 
 checkpoint = ModelCheckpoint(
     model_path,
-    monitor='val_loss',
+    monitor='loss',
     verbose=1,
     save_best_only=True,
     mode='min'
