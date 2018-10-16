@@ -5,6 +5,7 @@ import shutil
 import types
 import pandas as pd
 import ibm_boto3
+from botocore.client import Config
 from watson_developer_cloud import VisualRecognitionV3, WatsonApiException
 from dotenv import load_dotenv
 load_dotenv()
