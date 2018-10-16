@@ -26,12 +26,36 @@ def pandas_support(csv):
     if not hasattr(csv, "__iter__"): csv.__iter__ = types.MethodType( __iter__, csv )
     return csv
 
+def upload_as_coreml(cos, bucket, class_labels):
+    keras_path = bucket + '.h5'
+    mlmodel_path = bucket + '.mlmodel'
+    with CustomObjectScope({
+        'relu6': keras.applications.mobilenet.relu6,
+        'DepthwiseConv2D': keras.applications.mobilenet.DepthwiseConv2D
+    }):
+        coreml_model = convert(
+            keras_path,
+            input_names='image',
+            image_input_names='image',
+            red_bias=-123,
+            green_bias=-117,
+            blue_bias=-104,
+            class_labels=sorted(class_labels)
+        )
+
+        coreml_model.save(mlmodel_path)
+
+        print('uploading model...')
+        cos.Bucket(bucket).upload_file(
+            mlmodel_path,
+            mlmodel_path
+        )
+        print('done')
+
 class COSCheckpoint(Callback):
-    def __init__(self, cos_resource, bucket, path_local, mlmodel_path, class_labels):
+    def __init__(self, cos_resource, bucket, class_labels):
         self.cos_resource = cos_resource
         self.bucket = bucket
-        self.path_local = path_local
-        self.mlmodel_path = mlmodel_path
         self.class_labels = class_labels
         self.last_change = None
 
@@ -39,23 +63,8 @@ class COSCheckpoint(Callback):
         epoch_nr, logs = args
 
         if os.path.getmtime(self.path_local) != self.last_change:
-            with CustomObjectScope({'relu6': keras.applications.mobilenet.relu6,'DepthwiseConv2D': keras.applications.mobilenet.DepthwiseConv2D}):
-                coreml_model = convert(
-                    self.path_local,
-                    input_names = 'image',
-                    image_input_names = 'image',
-                    class_labels = self.class_labels
-                )
-
-                coreml_model.save(self.mlmodel_path)
-
-                print('uploading model...')
-                self.cos_resource.Bucket(self.bucket).upload_file(
-                    self.mlmodel_path,
-                    self.mlmodel_path
-                )
-                print('done')
-                self.last_change = os.path.getmtime(self.path_local)
+            upload_as_coreml(self.cos_resource, self.bucket, self.class_labels)
+            self.last_change = os.path.getmtime(self.path_local)
         else:
             print('model didn\'t improve - no upload')
 
@@ -212,20 +221,16 @@ model.compile(
 ################################################################################
 # Train model
 ################################################################################
-base_path = credentials_1['bucket']
-model_local_path = base_path + '.h5'
-mlmodel_path = base_path + '.mlmodel'
+model_path = credentials_1['bucket'] + '.h5'
 
 cos_persist = COSCheckpoint(
     cos_resource=cos,
     bucket=credentials_1['bucket'],
-    path_local=model_local_path,
-    mlmodel_path=mlmodel_path,
     class_labels=used_labels
 )
 
 checkpoint = ModelCheckpoint(
-    model_local_path,
+    model_path,
     monitor='val_loss',
     verbose=1,
     save_best_only=True,
@@ -233,36 +238,20 @@ checkpoint = ModelCheckpoint(
 )
 
 all_callbacks = [checkpoint, cos_persist]
+train_steps = 2 * train_generator.samples / train_generator.batch_size
+val_steps = 2 * validation_generator.samples / validation_generator.batch_size
 
 # Train the model
 history = model.fit_generator(
     train_generator,
-    steps_per_epoch=(2 * train_generator.samples)/train_generator.batch_size,
+    steps_per_epoch=train_steps,
     epochs=EPOCHS,
     validation_data=validation_generator,
-    validation_steps=(2 * validation_generator.samples)/validation_generator.batch_size,
-    # callbacks=all_callbacks,
+    validation_steps=val_steps,
+    callbacks=None,
     verbose=1
 )
 
-model.save(model_local_path)
+model.save(model_path)
 
-with CustomObjectScope({'relu6': keras.applications.mobilenet.relu6,'DepthwiseConv2D': keras.applications.mobilenet.DepthwiseConv2D}):
-    coreml_model = convert(
-        model_local_path,
-        input_names='image',
-        image_input_names='image',
-        red_bias=-123,
-        green_bias=-117,
-        blue_bias=-104,
-        class_labels=sorted(used_labels)
-    )
-
-    coreml_model.save(mlmodel_path)
-
-    print('uploading model...')
-    cos.Bucket(credentials_1['bucket']).upload_file(
-        mlmodel_path,
-        mlmodel_path
-    )
-    print('done')
+upload_as_coreml(cos, credentials_1['bucket'], used_labels)
