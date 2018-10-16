@@ -121,6 +121,14 @@ for bucket in cos.buckets.all():
 ################################################################################
 train_dir = 'train'
 
+# Get csv of annotations (url, label).
+annotations = cos.Object(credentials_1['bucket'], '_annotations.csv').get()['Body']
+annotations = pandas_support(annotations)
+annotations_df = pd.read_csv(annotations, header=None)
+annotations_df = annotations_df.set_index([1])
+
+used_labels = annotations_df.index.unique().tolist()
+
 if not args.cache or not os.path.exists(train_dir) or not os.path.isdir(train_dir):
     # Purge data if directories already exist.
     if os.path.exists(train_dir) and os.path.isdir(train_dir):
@@ -128,13 +136,6 @@ if not args.cache or not os.path.exists(train_dir) or not os.path.isdir(train_di
 
     os.mkdir(train_dir)
 
-    # Get csv of annotations (url, label).
-    annotations = cos.Object(credentials_1['bucket'], '_annotations.csv').get()['Body']
-    annotations = pandas_support(annotations)
-    annotations_df = pd.read_csv(annotations, header=None)
-    annotations_df = annotations_df.set_index([1])
-
-    used_labels = annotations_df.index.unique().tolist()
     for label in used_labels:
         file_list = annotations_df.loc[label].values.flatten()
 
