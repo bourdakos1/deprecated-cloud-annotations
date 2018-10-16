@@ -180,16 +180,14 @@ mobile = MobileNet(weights='imagenet', include_top=False, input_shape=(224, 224,
 mobile.summary()
 
 # Freeze the layers except the last layers
-for layer in mobile.layers[:-TRAINABLE_LAYERS]:
+for layer in mobile.layers:
     layer.trainable = False
 
 x = mobile.output
 x = GlobalAveragePooling2D()(x)
 x = Reshape((1, 1, 1024))(x)
 x = Dropout(0.01)(x)
-# x = Conv2D(1024, (1, 1), activation='relu', padding='same')(x)
 x = Conv2D(len(used_labels), (1, 1), activation='softmax', padding='same')(x)
-# x = Dense(len(used_labels), activation='softmax')(x)
 predictions = Reshape((len(used_labels),))(x)
 
 model = Model(inputs=mobile.input, outputs=predictions)
