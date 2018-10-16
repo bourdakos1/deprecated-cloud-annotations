@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		231B10BD21765C7900DEF66E /* beerworkshop-donotdelete-pr-xuqjgrtmojawuq (21).mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 231B10BC21765C7900DEF66E /* beerworkshop-donotdelete-pr-xuqjgrtmojawuq (21).mlmodel */; };
 		237A0D5721274ABE003FA1F9 /* CameraViewController+Heatmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237A0D5621274ABE003FA1F9 /* CameraViewController+Heatmap.swift */; };
 		23B0A77920A3888B00D02B06 /* UIViewController+PulleyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B0A77820A3888B00D02B06 /* UIViewController+PulleyViewController.swift */; };
 		23B0A77B20A3A7FB00D02B06 /* Credentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 23B0A77A20A3A7FB00D02B06 /* Credentials.plist */; };
@@ -39,7 +38,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		231B10BC21765C7900DEF66E /* beerworkshop-donotdelete-pr-xuqjgrtmojawuq (21).mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = "beerworkshop-donotdelete-pr-xuqjgrtmojawuq (21).mlmodel"; sourceTree = "<group>"; };
 		237A0D5621274ABE003FA1F9 /* CameraViewController+Heatmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraViewController+Heatmap.swift"; sourceTree = "<group>"; };
 		23B0A77820A3888B00D02B06 /* UIViewController+PulleyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PulleyViewController.swift"; sourceTree = "<group>"; };
 		23B0A77A20A3A7FB00D02B06 /* Credentials.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Credentials.plist; sourceTree = "<group>"; };
@@ -113,7 +111,6 @@
 				2D7DF31E204F4D1E00CC26D7 /* Supporting Files */,
 				2DBDD2941FCF7FAE004A6DC1 /* AppDelegate.swift */,
 				23D8615A2125C31500B9D5AF /* CameraViewController.swift */,
-				231B10BC21765C7900DEF66E /* beerworkshop-donotdelete-pr-xuqjgrtmojawuq (21).mlmodel */,
 				237A0D5621274ABE003FA1F9 /* CameraViewController+Heatmap.swift */,
 				2DBEDF451FD20672003F17C8 /* Main.storyboard */,
 				2DBDD29E1FCF7FAE004A6DC1 /* Assets.xcassets */,
@@ -211,7 +208,6 @@
 				23D8615B2125C31500B9D5AF /* CameraViewController.swift in Sources */,
 				23B0A77920A3888B00D02B06 /* UIViewController+PulleyViewController.swift in Sources */,
 				2D7870C31FE1CF910018BFE9 /* PulleyViewController.swift in Sources */,
-				231B10BD21765C7900DEF66E /* beerworkshop-donotdelete-pr-xuqjgrtmojawuq (21).mlmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
