@@ -18,7 +18,7 @@ The two scripts provided automatically upload your fully trained model to your o
 
 Too allow for developement and testing of models without interfering with your production apps, you can set branch flags for your model.
 
-## Create a Cloud Object Storage instance
+## Creating a Cloud Object Storage instance
 
 Log in or sign up for [IBM Cloud](https://console.bluemix.net/).
 
