@@ -4,9 +4,9 @@ import uuid
 import shutil
 import types
 import pandas as pd
-import ibm_boto3
 import keras
-from sklearn.model_selection import train_test_split
+import argparse
+import ibm_boto3
 from botocore.client import Config
 from keras.applications.mobilenet import MobileNet, preprocess_input
 from keras.preprocessing.image import ImageDataGenerator
@@ -19,6 +19,15 @@ from keras.utils.generic_utils import CustomObjectScope
 from coremltools.converters.keras import convert
 from dotenv import load_dotenv
 load_dotenv()
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '-c',
+    '--cache',
+    help='Use the existing train folder, if one exists.',
+    action='store_true'
+)
+args = parser.parse_args()
 
 def __iter__(self): return 0
 def pandas_support(csv):
@@ -87,7 +96,7 @@ credentials_1 = {
 IMG_WIDTH, IMG_HEIGHT = 224, 224
 EPOCHS = 20
 BATCH_SIZE = 50
-TRAINABLE_LAYERS = 0
+TRAINABLE_LAYERS = 6
 LEARNING_RATE = 0.001
 
 
@@ -102,66 +111,49 @@ cos = ibm_boto3.resource('s3',
     endpoint_url=credentials_1['url']
 )
 
-# List available buckets.
-for bucket in cos.buckets.all():
-    print(bucket.name)
-
 
 ################################################################################
 # Prepare dataset
 ################################################################################
+train_dir = 'train'
+
 # Get csv of annotations (url, label).
 annotations = cos.Object(credentials_1['bucket'], '_annotations.csv').get()['Body']
 annotations = pandas_support(annotations)
 annotations_df = pd.read_csv(annotations, header=None)
 annotations_df = annotations_df.set_index([1])
 
-# Create a training and validation folder.
-train_dir = 'train'
-validation_dir = 'val'
-validation_size = 0.17
-
-# Purge data if directories already exist.
-if os.path.exists(train_dir) and os.path.isdir(train_dir):
-    shutil.rmtree(train_dir)
-
-if os.path.exists(validation_dir) and os.path.isdir(validation_dir):
-    shutil.rmtree(validation_dir)
-
-os.mkdir(train_dir)
-os.mkdir(validation_dir)
-
 used_labels = annotations_df.index.unique().tolist()
-for label in used_labels:
-    file_list = annotations_df.loc[label].values.flatten()
 
-    # Make directory for labels, if they don't exist.
-    train_label_dir = os.path.join(train_dir, label)
-    val_label_dir = os.path.join(validation_dir, label)
-    if not os.path.exists(train_label_dir):
-        os.makedirs(train_label_dir)
-    if not os.path.exists(val_label_dir):
-        os.makedirs(val_label_dir)
+if not args.cache or not os.path.exists(train_dir) or not os.path.isdir(train_dir):
+    # Purge data if directories already exist.
+    if os.path.exists(train_dir) and os.path.isdir(train_dir):
+        shutil.rmtree(train_dir)
+        if args.cache:
+            print('No {} directory found.\ndownloading bucket...'.format(train_dir))
+        else:
+            print('Note: Try using the `--cache` flag to avoid redownloading the bucket.')
 
-    # Split the data into a training and validation set.
-    x_train, x_val = train_test_split(file_list, test_size=validation_size)
+    os.mkdir(train_dir)
 
-    # Download training files.
-    for file in x_train:
-        _, file_extension = os.path.splitext(file)
-        filename = os.path.join(train_label_dir, uuid.uuid4().hex + file_extension)
-        print('saving: {}'.format(file))
-        print('to: {}'.format(filename))
-        cos.Object(credentials_1['bucket'], file).download_file(filename)
+    for label in used_labels:
+        file_list = annotations_df.loc[label].values.flatten()
 
-    # Download validation files.
-    for file in x_val:
-        _, file_extension = os.path.splitext(file)
-        filename = os.path.join(val_label_dir, uuid.uuid4().hex + file_extension)
-        print('saving: {}'.format(file))
-        print('to: {}'.format(filename))
-        cos.Object(credentials_1['bucket'], file).download_file(filename)
-print('done')
+        # Make directory for labels, if they don't exist.
+        train_label_dir = os.path.join(train_dir, label)
+        if not os.path.exists(train_label_dir):
+            os.makedirs(train_label_dir)
+
+        # Download training files.
+        for file in file_list:
+            _, file_extension = os.path.splitext(file)
+            filename = os.path.join(train_label_dir, uuid.uuid4().hex + file_extension)
+            print('saving: {}'.format(file))
+            print('to: {}'.format(filename))
+            cos.Object(credentials_1['bucket'], file).download_file(filename)
+    print('done')
+else:
+    print('Using cached data...')
 
 def subtract_mean(x):
     x[:,:,0] -= 123
@@ -180,12 +172,6 @@ train_generator = datagen.flow_from_directory(
     batch_size=BATCH_SIZE
 )
 
-validation_generator = datagen.flow_from_directory(
-    validation_dir,
-    target_size=(IMG_WIDTH, IMG_HEIGHT),
-    batch_size=BATCH_SIZE
-)
-
 
 ################################################################################
 # Build model
@@ -194,15 +180,18 @@ mobile = MobileNet(weights='imagenet', include_top=False, input_shape=(224, 224,
 mobile.summary()
 
 # Freeze the layers except the last layers
-for layer in mobile.layers[:-TRAINABLE_LAYERS]:
-    layer.trainable = False
+if TRAINABLE_LAYERS == 0:
+    for layer in mobile.layers:
+        layer.trainable = False
+else:
+    for layer in mobile.layers[:-TRAINABLE_LAYERS]:
+        layer.trainable = False
 
 x = mobile.output
 x = GlobalAveragePooling2D()(x)
 x = Reshape((1, 1, 1024))(x)
 x = Dropout(0.01)(x)
-x = Conv2D(1024, (1, 1), activation='relu', padding='same')(x)
-x = Dense(len(used_labels), activation='softmax')(x)
+x = Conv2D(len(used_labels), (1, 1), activation='softmax', padding='same')(x)
 predictions = Reshape((len(used_labels),))(x)
 
 model = Model(inputs=mobile.input, outputs=predictions)
@@ -231,23 +220,20 @@ cos_persist = COSCheckpoint(
 
 checkpoint = ModelCheckpoint(
     model_path,
-    monitor='val_loss',
+    monitor='loss',
     verbose=1,
     save_best_only=True,
     mode='min'
 )
 
 all_callbacks = [checkpoint, cos_persist]
-train_steps = 2 * train_generator.samples / train_generator.batch_size
-val_steps = 2 * validation_generator.samples / validation_generator.batch_size
+train_steps = train_generator.samples / train_generator.batch_size
 
 # Train the model
 history = model.fit_generator(
     train_generator,
     steps_per_epoch=train_steps,
     epochs=EPOCHS,
-    validation_data=validation_generator,
-    validation_steps=val_steps,
     callbacks=None,
     verbose=1
 )
