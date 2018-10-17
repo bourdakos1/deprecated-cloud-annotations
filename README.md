@@ -32,7 +32,7 @@ This is your IBM Cloud dashboard where you can create and manage IBM Cloud resou
 ## Getting Credentials
 In order for us to access our Object Storage instance, we need to create credentials for it. 
 
-Create a new service credential with write permissions.
+Create a new service credential with the role of **Writer**.
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539807399869_Screen+Shot+2018-10-17+at+3.00.09+PM.png)
 
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539805631823_Screen+Shot+2018-10-17+at+3.00.17+PM.png)
