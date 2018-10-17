@@ -33,4 +33,4 @@ Click the `View credentials` drop down and take note of your `apikey` and your `
 }
 ```
 ## Add credentials to the annotation tool
-![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539803159653_Screen+Shot+2018-10-17+at+2.57.36+PM.png)
+![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539807682825_Screen+Shot+2018-10-17+at+4.21.05+PM.png)
