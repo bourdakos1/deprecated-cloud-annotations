@@ -19,7 +19,6 @@ The two scripts provided automatically upload your fully trained model to your o
 Too allow for developement and testing of models without interfering with your production apps, you can set branch flags for your model.
 
 ## Creating a Cloud Object Storage Instance
-
 Log in or sign up for [IBM Cloud](https://console.bluemix.net/).
 
 This is your IBM Cloud dashboard where you can create and manage IBM Cloud resources. We need to create an Object Storage instance to hold our images, annotations and trained models.
@@ -31,6 +30,8 @@ This is your IBM Cloud dashboard where you can create and manage IBM Cloud resou
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539804685813_Screen+Shot+2018-10-17+at+2.37.27+PM.png)
 
 ## Getting Credentials
+In order for us to access our Object Storage instance, we need to create credentials for it. 
+
 Create a new service credential with write permissions.
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539807399869_Screen+Shot+2018-10-17+at+3.00.09+PM.png)
 
