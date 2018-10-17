@@ -1,6 +1,12 @@
 # Think of A Title
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539811142193_schematic.png)
 
+The endless cycle of machine learning is as follows:
+- Collect data
+- Label data
+- Train/retrain a model from the labeled data
+- Deploy the model
+
 ## Create a Cloud Object Storage instance
 
 Log in or sign up for [IBM Cloud](https://console.bluemix.net/).
