@@ -1,6 +1,7 @@
 # Cloud Annotations
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539811142193_schematic.png)
 
+### The cycle of machine learning
 ### Collect data
 Everything revolves around an object storage bucket.
 
