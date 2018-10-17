@@ -1,7 +1,7 @@
 # Cloud Annotations
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539811142193_schematic.png)
 
-## The cycle of machine learning
+## The Cycle of Machine Learning
 ### Collect data
 Everything revolves around an object storage bucket.
 
@@ -18,7 +18,7 @@ The two scripts provided automatically upload your fully trained model to your o
 
 Too allow for developement and testing of models without interfering with your production apps, you can set branch flags for your model.
 
-## Creating a Cloud Object Storage instance
+## Creating a Cloud Object Storage Instance
 
 Log in or sign up for [IBM Cloud](https://console.bluemix.net/).
 
