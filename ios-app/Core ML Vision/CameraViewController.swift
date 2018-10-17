@@ -95,13 +95,33 @@ class CameraViewController: UIViewController {
         }
         drawer.delegate = self
         
-        SwiftSpinner.show("Compiling model...")
-        cloudVision.downloadModel(bucketId: CloudVisionConstants.bucketId, modelBranch: CloudVisionConstants.modelBranch) { _, error in
+        cloudVision.getLatestModelDate(bucketId: CloudVisionConstants.bucketId, modelBranch: CloudVisionConstants.modelBranch) { date, error in
             DispatchQueue.main.async {
-                if let error = error {
-                    self.modelUpdateFail(bucketId: CloudVisionConstants.bucketId, error: error)
+                guard let cloudModelLastModified = date else {
+                    self.modelUpdateFail(bucketId: CloudVisionConstants.bucketId, error: error ?? NSError())
+                    return
                 }
-                SwiftSpinner.hide()
+                let defaults = UserDefaults.standard
+                
+                // If local model data is matches the cloud date don't download the model.
+                if let localModelLastModified = defaults.object(forKey: "lastModified") as? Date {
+                    if localModelLastModified >= cloudModelLastModified {
+                        return
+                    }
+                }
+                
+                // Download the cloud model.
+                SwiftSpinner.show("Compiling model...")
+                self.cloudVision.downloadModel(bucketId: CloudVisionConstants.bucketId, modelBranch: CloudVisionConstants.modelBranch) { _, error in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            self.modelUpdateFail(bucketId: CloudVisionConstants.bucketId, error: error)
+                        } else {
+                            defaults.set(cloudModelLastModified, forKey: "lastModified")
+                        }
+                        SwiftSpinner.hide()
+                    }
+                }
             }
         }
     }

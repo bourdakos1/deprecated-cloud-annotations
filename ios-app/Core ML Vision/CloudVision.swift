@@ -168,25 +168,15 @@ class CloudVision {
         task.resume()
     }
     
-    /**
-     Download a Core ML model to the local filesystem. The model is compiled and moved to the application support
-     directory with a filename of `[classifier-id].mlmodelc`.
-     - parameter classifierID: The classifierID of the model to download.
-     - parameter failure: A function executed if an error occurs.
-     - parameter success: A function executed after the Core ML model has been downloaded and compiled.
-     */
-    public func downloadModel(bucketId: String, modelBranch: String = "master", completion: ((Void?, Error?) -> Void)? = nil) {
-        let branch = modelBranch == "master" ? "" : "-\(modelBranch)"
-        
-        guard let authUrl = URL(string: "https://iam.ng.bluemix.net/oidc/token?apikey=\(self.apiKey)&response_type=cloud_iam&grant_type=urn:ibm:params:oauth:grant-type:apikey"),
-            let url = URL(string: "https://\(self.endpoint)/\(bucketId)/\(bucketId)\(branch).mlmodel") else {
-            let description = "Bad url"
-            let userInfo = [NSLocalizedDescriptionKey: description]
-            let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
-            completion?(nil, error)
-            return
+    private func getToken(completion: @escaping (String?, Error?) -> Void) {
+        guard let authUrl = URL(string: "https://iam.ng.bluemix.net/oidc/token?apikey=\(self.apiKey)&response_type=cloud_iam&grant_type=urn:ibm:params:oauth:grant-type:apikey") else {
+                let description = "Bad url"
+                let userInfo = [NSLocalizedDescriptionKey: description]
+                let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                completion(nil, error)
+                return
         }
-    
+        
         let sessionConfig = URLSessionConfiguration.default
         let session = URLSession(configuration: sessionConfig)
         var request = URLRequest(url: authUrl)
@@ -197,7 +187,7 @@ class CloudVision {
                 let description = "Couldn't authenticate"
                 let userInfo = [NSLocalizedDescriptionKey: description]
                 let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
-                completion?(nil, error)
+                completion(nil, error)
                 return
             }
             
@@ -208,7 +198,7 @@ class CloudVision {
                 let description = "Unable to parse json"
                 let userInfo = [NSLocalizedDescriptionKey: description]
                 let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
-                completion?(nil, error)
+                completion(nil, error)
                 return
             }
             
@@ -216,12 +206,96 @@ class CloudVision {
                 let description = "Unable to parse json"
                 let userInfo = [NSLocalizedDescriptionKey: description]
                 let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
-                completion?(nil, error)
+                completion(nil, error)
                 return
             }
             
             guard let token = parsedJson["access_token"] as? String else {
                 let description = "Unable to parse json"
+                let userInfo = [NSLocalizedDescriptionKey: description]
+                let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                completion(nil, error)
+                return
+            }
+            
+            completion(token, nil)
+        }
+        task.resume()
+    }
+    
+    public func getLatestModelDate(bucketId: String, modelBranch: String = "master", completion: ((Date?, Error?) -> Void)? = nil) {
+        let branch = modelBranch == "master" ? "" : "-\(modelBranch)"
+        
+        guard let url = URL(string: "https://\(self.endpoint)/\(bucketId)/\(bucketId)\(branch).mlmodel") else {
+            let description = "Bad url"
+            let userInfo = [NSLocalizedDescriptionKey: description]
+            let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+            completion?(nil, error)
+            return
+        }
+        
+        getToken() { token, error in
+            guard let token = token else {
+                let description = "Failed to authenticate"
+                let userInfo = [NSLocalizedDescriptionKey: description]
+                let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                completion?(nil, error)
+                return
+            }
+            
+            let sessionConfig = URLSessionConfiguration.default
+            let session = URLSession(configuration: sessionConfig)
+            var request = URLRequest(url: url)
+            request.setValue("bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.httpMethod = "HEAD"
+            
+            let task = session.dataTask(with: request) { (data, response, error) in
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    let description = "Couldn't fetch date"
+                    let userInfo = [NSLocalizedDescriptionKey: description]
+                    let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                    completion?(nil, error)
+                    return
+                }
+                guard let modified = httpResponse.allHeaderFields["Last-Modified"] as? String else {
+                    let description = "Couldn't fetch date"
+                    let userInfo = [NSLocalizedDescriptionKey: description]
+                    let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                    completion?(nil, error)
+                    return
+                }
+                
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "EEEE, dd LLL yyyy HH:mm:ss zzz"
+                let dateModified = dateFormatter.date(from: modified)
+                
+                completion?(dateModified, nil)
+            }
+            task.resume()
+        }
+    }
+    
+    /**
+     Download a Core ML model to the local filesystem. The model is compiled and moved to the application support
+     directory with a filename of `[classifier-id].mlmodelc`.
+     - parameter classifierID: The classifierID of the model to download.
+     - parameter failure: A function executed if an error occurs.
+     - parameter success: A function executed after the Core ML model has been downloaded and compiled.
+     */
+    public func downloadModel(bucketId: String, modelBranch: String = "master", completion: ((Void?, Error?) -> Void)? = nil) {
+        let branch = modelBranch == "master" ? "" : "-\(modelBranch)"
+        
+        guard let url = URL(string: "https://\(self.endpoint)/\(bucketId)/\(bucketId)\(branch).mlmodel") else {
+            let description = "Bad url"
+            let userInfo = [NSLocalizedDescriptionKey: description]
+            let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+            completion?(nil, error)
+            return
+        }
+    
+        getToken() { token, error in
+            guard let token = token else {
+                let description = "Failed to authenticate"
                 let userInfo = [NSLocalizedDescriptionKey: description]
                 let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
                 completion?(nil, error)
@@ -335,6 +409,5 @@ class CloudVision {
                 completion?(nil, nil)
             }
         }
-        task.resume()
     }
 }
