@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		23074FB4217667FF00F43ECA /* CloudVision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23074FB3217667FF00F43ECA /* CloudVision.swift */; };
+		23074FB62177A30500F43ECA /* CloudVisionConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23074FB52177A30500F43ECA /* CloudVisionConstants.swift */; };
 		237A0D5721274ABE003FA1F9 /* CameraViewController+Heatmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237A0D5621274ABE003FA1F9 /* CameraViewController+Heatmap.swift */; };
 		23B0A77920A3888B00D02B06 /* UIViewController+PulleyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B0A77820A3888B00D02B06 /* UIViewController+PulleyViewController.swift */; };
 		23B0A77B20A3A7FB00D02B06 /* Credentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 23B0A77A20A3A7FB00D02B06 /* Credentials.plist */; };
@@ -40,6 +41,7 @@
 
 /* Begin PBXFileReference section */
 		23074FB3217667FF00F43ECA /* CloudVision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudVision.swift; sourceTree = "<group>"; };
+		23074FB52177A30500F43ECA /* CloudVisionConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudVisionConstants.swift; sourceTree = "<group>"; };
 		237A0D5621274ABE003FA1F9 /* CameraViewController+Heatmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraViewController+Heatmap.swift"; sourceTree = "<group>"; };
 		23B0A77820A3888B00D02B06 /* UIViewController+PulleyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+PulleyViewController.swift"; sourceTree = "<group>"; };
 		23B0A77A20A3A7FB00D02B06 /* Credentials.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Credentials.plist; sourceTree = "<group>"; };
@@ -112,13 +114,14 @@
 			children = (
 				2D7DF31E204F4D1E00CC26D7 /* Supporting Files */,
 				2DBDD2941FCF7FAE004A6DC1 /* AppDelegate.swift */,
+				23074FB52177A30500F43ECA /* CloudVisionConstants.swift */,
+				23B0A77A20A3A7FB00D02B06 /* Credentials.plist */,
 				23D8615A2125C31500B9D5AF /* CameraViewController.swift */,
 				237A0D5621274ABE003FA1F9 /* CameraViewController+Heatmap.swift */,
 				2DBEDF451FD20672003F17C8 /* Main.storyboard */,
 				2DBDD29E1FCF7FAE004A6DC1 /* Assets.xcassets */,
 				2DBDD2A01FCF7FAE004A6DC1 /* LaunchScreen.storyboard */,
 				2DBDD2A31FCF7FAE004A6DC1 /* Info.plist */,
-				23B0A77A20A3A7FB00D02B06 /* Credentials.plist */,
 				2DC5F13C1FD609050063B2D5 /* ResultsTableViewController.swift */,
 				2DC5F13E1FD6093B0063B2D5 /* ResultsTableViewCell.swift */,
 				23074FB3217667FF00F43ECA /* CloudVision.swift */,
@@ -212,6 +215,7 @@
 				23D8615B2125C31500B9D5AF /* CameraViewController.swift in Sources */,
 				23B0A77920A3888B00D02B06 /* UIViewController+PulleyViewController.swift in Sources */,
 				2D7870C31FE1CF910018BFE9 /* PulleyViewController.swift in Sources */,
+				23074FB62177A30500F43ECA /* CloudVisionConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

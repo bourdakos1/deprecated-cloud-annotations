@@ -18,12 +18,6 @@ import UIKit
 import AVFoundation
 import Vision
 
-struct CloudVisionConstants {
-    static let bucketId = "coffe-vs-wallet"
-    static let modelBranch = "master"
-    static let endpoint = "s3-api.us-geo.objectstorage.softlayer.net"
-}
-
 class CameraViewController: UIViewController {
 
     // MARK: - IBOutlets
