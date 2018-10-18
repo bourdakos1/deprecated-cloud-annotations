@@ -86,7 +86,7 @@ credentials_1 = {
   'iam_url': 'https://iam.ng.bluemix.net/oidc/token',
   'api_key': os.getenv('API_KEY'),
   'resource_instance_id': os.getenv('RESOURCE_INSTANCE_ID'),
-  'url': 'https://s3-api.us-geo.objectstorage.service.networklayer.com'
+  'url': 'https://s3-api.us-geo.objectstorage.softlayer.net'
 }
 
 
