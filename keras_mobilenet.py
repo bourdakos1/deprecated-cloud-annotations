@@ -22,10 +22,13 @@ load_dotenv()
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    '-c',
     '--cache',
     help='Use the existing train folder, if one exists.',
     action='store_true'
+)
+parser.add_argument(
+    '--bucket',
+    help='Object Storage bucket to pull from.'
 )
 args = parser.parse_args()
 
@@ -82,7 +85,7 @@ class COSCheckpoint(Callback):
 # Credentials
 ################################################################################
 credentials_1 = {
-  'bucket': os.getenv('BUCKET'),
+  'bucket': args.bucket,
   'iam_url': 'https://iam.ng.bluemix.net/oidc/token',
   'api_key': os.getenv('API_KEY'),
   'resource_instance_id': os.getenv('RESOURCE_INSTANCE_ID'),
@@ -116,6 +119,12 @@ cos = ibm_boto3.resource('s3',
 # Prepare dataset
 ################################################################################
 train_dir = 'train'
+
+if credentials_1['bucket'] == None:
+    print('\nPlease choose a bucket:')
+    for i, bucket in enumerate(cos.buckets.all()):
+        print('  {}) {}'.format(i + 1, bucket.name))
+    credentials_1['bucket'] = input("Bucket name: ")
 
 # Get csv of annotations (url, label).
 annotations = cos.Object(credentials_1['bucket'], '_annotations.csv').get()['Body']
