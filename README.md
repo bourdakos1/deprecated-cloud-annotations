@@ -73,7 +73,6 @@ pip install -r keras_requirements.txt
 
 Create a `.env` file with your Object Storage credentials:
 ```
-BUCKET=
 API_KEY=
 RESOURCE_INSTANCE_ID=
 ```
