@@ -59,7 +59,25 @@ Just add your object storage credentials and ideally the rest should be pretty s
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539807682825_Screen+Shot+2018-10-17+at+4.21.05+PM.png)
 
 ## Training a Model
-First, clone this repo
+Requirements: python 3.5 or 3.6 (NOT 3.7)
+Clone the repo:
 ```bash
 git clone https://github.com/bourdakos1/Cloud-Annotations.git && cd Cloud-Annotations
+```
+
+Install the requirements:
+```bash
+pip install -r keras_requirements.txt
+```
+
+Create a `.env` file with your Object Storage credentials:
+```
+BUCKET=
+API_KEY=
+RESOURCE_INSTANCE_ID=
+```
+
+Run the script:
+```
+python keras_mobilenet.py
 ```
