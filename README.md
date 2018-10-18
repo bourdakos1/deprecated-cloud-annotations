@@ -60,6 +60,7 @@ Just add your object storage credentials and ideally the rest should be pretty s
 
 ## Training a Model
 Requirements: python 3.5 or 3.6 (NOT 3.7)
+
 Clone the repo:
 ```bash
 git clone https://github.com/bourdakos1/Cloud-Annotations.git && cd Cloud-Annotations
