@@ -55,6 +55,7 @@ Click the **View credentials ▾** dropdown and take note of your **apikey** and
 }
 ```
 ## Using the Cloud Annotations Tool
+https://testannotations.us-east.containers.appdomain.cloud/coffe-vs-wallet
 Just add your object storage credentials and ideally the rest should be pretty self explanatory.
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539807682825_Screen+Shot+2018-10-17+at+4.21.05+PM.png)
 
