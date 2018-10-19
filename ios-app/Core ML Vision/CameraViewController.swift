@@ -123,7 +123,11 @@ class CameraViewController: UIViewController {
     // MARK: - Image Classification
     
     func classifyImage(_ image: UIImage, localThreshold: Double = 0.0) {
-        editedImage = cropToCenter(image: image, targetSize: CGSize(width: 224, height: 224))
+        guard let croppedImage = cropToCenter(image: image, targetSize: CGSize(width: 224, height: 224)) else {
+            return
+        }
+        
+        editedImage = croppedImage
         
         showResultsUI(for: image)
         
@@ -245,22 +249,26 @@ class CameraViewController: UIViewController {
         return newImage
     }
     
-    func cropToCenter(image: UIImage, targetSize: CGSize) -> UIImage {
-        let offset = abs((image.size.width - image.size.height) / 2)
-        let posX = image.size.width > image.size.height ? offset : 0.0
-        let posY = image.size.width < image.size.height ? offset : 0.0
-        let newSize = CGFloat(min(image.size.width, image.size.height))
+    func cropToCenter(image: UIImage, targetSize: CGSize) -> UIImage? {
+        guard let cgImage = image.cgImage else {
+            return nil
+        }
         
-        // crop image to square
-        let cropRect = CGRect(x: posX, y: posY, width: newSize, height: newSize)
+        let offset = abs(CGFloat(cgImage.width - cgImage.height) / 2)
+        let newSize = CGFloat(min(cgImage.width, cgImage.height))
         
-        guard let cgImage = image.cgImage,
-            let cropped = cgImage.cropping(to: cropRect) else {
-                return image
+        let cropRect: CGRect
+        if cgImage.width < cgImage.height {
+            cropRect = CGRect(x: 0.0, y: offset, width: newSize, height: newSize)
+        } else {
+            cropRect = CGRect(x: offset, y: 0.0, width: newSize, height: newSize)
+        }
+        
+        guard let cropped = cgImage.cropping(to: cropRect) else {
+            return nil
         }
         
         let image = UIImage(cgImage: cropped, scale: image.scale, orientation: image.imageOrientation)
-        
         let resizeRect = CGRect(x: 0, y: 0, width: targetSize.width, height: targetSize.height)
         
         UIGraphicsBeginImageContextWithOptions(targetSize, false, 1.0)
