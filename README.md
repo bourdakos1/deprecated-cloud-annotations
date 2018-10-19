@@ -62,8 +62,16 @@ Just add your object storage credentials and ideally the rest should be pretty s
 
 ## Training a Model
 > **Requirements:** python 3.5 or 3.6 (NOT 3.7)
-> run `python3 --version` to check
-> if you install python with brew and have 3.7, run: `brew unlink python`, followed by: `brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb`
+> 
+> Run `python3 --version` to check
+> 
+> If you installed python with brew and have python 3.7, run:
+> 
+> `brew unlink python`
+>
+> followed by:
+> 
+> `brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb`
 
 Clone the repo:
 ```bash
