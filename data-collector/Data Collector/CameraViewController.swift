@@ -25,6 +25,11 @@ class CameraViewController: UIViewController {
     @IBOutlet weak var cameraView: UIView!
     @IBOutlet weak var focusView: UIImageView!
     @IBOutlet weak var captureButton: UIButton!
+    @IBOutlet weak var thumbnail: UIView!
+    @IBOutlet weak var thumbnailImage: UIImageView!
+    @IBOutlet weak var queue: UILabel!
+    @IBOutlet weak var width: NSLayoutConstraint!
+    @IBOutlet weak var height: NSLayoutConstraint!
 
     // MARK: - Variable Declarations
     
@@ -64,18 +69,44 @@ class CameraViewController: UIViewController {
         return nil
     }()
     
+    var queueCount = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         captureSession?.startRunning()
+        thumbnailImage.layer.cornerRadius = 5.0
+        queue.isHidden = true
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // load the thumbnail of images.
+        // This needs to happen in view did appear so it loads in the right spot.
+        let border = UIView()
+        let frame = CGRect(x: thumbnailImage.frame.origin.x - 1.0, y: thumbnailImage.frame.origin.y - 1.0, width: thumbnailImage.frame.size.height + 2.0, height: thumbnailImage.frame.size.height + 2.0)
+        border.backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.25)
+        border.frame = frame
+        border.layer.cornerRadius = 7.0
+        view.insertSubview(border, belowSubview: thumbnailImage)
     }
     
     // MARK: - Image Upload
     
     func classifyImage(_ image: UIImage) {
         let editedImage = cropToCenter(image: image, targetSize: CGSize(width: 224, height: 224))
-        
+        queueCount += 1
+        queue.text = "\(queueCount)"
+        queue.isHidden = false
         cloudVision.uploadImage(image: editedImage, bucketId: CloudVisionConstants.bucketId) { data, responce, error in
-
+            DispatchQueue.main.async {
+                self.queueCount -= 1
+                self.queue.text = "\(self.queueCount)"
+                if self.queueCount == 0 {
+                    self.queue.isHidden = true
+                    self.thumbnailImage.image = nil
+                }
+            }
         }
     }
     
@@ -155,6 +186,17 @@ extension CameraViewController {
 // MARK: - AVCapturePhotoCaptureDelegate
 
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
+
+    
+    func photoOutput(_ captureOutput: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
+        DispatchQueue.main.async { [unowned self] in
+            self.cameraView.layer.opacity = 0
+            UIView.animate(withDuration: 0.25) { [unowned self] in
+                self.cameraView.layer.opacity = 1
+            }
+        }
+    }
+    
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
             print(error.localizedDescription)
@@ -165,8 +207,22 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
             return
         }
         
+        DispatchQueue.main.async { [unowned self] in
+            self.width.constant = 5
+            self.height.constant = 5
+            self.thumbnailImage.image = image
+            self.view.layoutIfNeeded()
+            self.width.constant = 60
+            self.height.constant = 60
+            UIView.animate(withDuration: 0.3, delay: 0.0, options: [.curveEaseOut], animations: { () -> Void in
+                self.thumbnailImage.alpha = 1.0
+            }, completion: nil)
+            UIView.animate(withDuration: 0.3, delay: 0.0, options: [.curveEaseOut], animations: { () -> Void in
+                self.view.layoutIfNeeded()
+            }, completion: nil)
+        }
+        
         classifyImage(image)
     }
 }
-
 
