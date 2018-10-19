@@ -118,7 +118,6 @@
                         <viewLayoutGuide key="safeArea" id="QGZ-b4-zCe"/>
                         <variation key="default">
                             <mask key="subviews">
-                                <exclude reference="O2c-uk-frK"/>
                                 <exclude reference="C0k-SZ-2ab"/>
                             </mask>
                         </variation>
