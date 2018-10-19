@@ -25,20 +25,50 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Focus" translatesAutoresizingMaskIntoConstraints="NO" id="nUF-ND-VCt">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O2r-J3-bTU">
+                                <rect key="frame" x="16" y="558.5" width="60" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="768-at-plB"/>
+                                    <constraint firstAttribute="width" constant="60" id="QtB-4H-HKo"/>
+                                </constraints>
+                            </view>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="P3H-8W-XyV">
+                                <rect key="frame" x="16" y="558.5" width="60" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="60" id="012-nM-fiz"/>
+                                    <constraint firstAttribute="height" constant="60" id="YIM-fL-SCv"/>
+                                </constraints>
+                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gZh-H7-kgW">
-                                <rect key="frame" x="71.5" y="395" width="232" height="232"/>
+                                <rect key="frame" x="149" y="550" width="77" height="77"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="77" id="R1D-hc-V8E"/>
+                                    <constraint firstAttribute="width" constant="77" id="jMd-J6-2Fe"/>
+                                </constraints>
                                 <state key="normal" image="Capture"/>
                                 <connections>
                                     <action selector="capturePhoto" destination="MPu-h4-IWa" eventType="touchUpInside" id="ZsM-1A-Eqj"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PUB-9y-xnT">
+                                <rect key="frame" x="39.5" y="573" width="13" height="31.5"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="26"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="PUB-9y-xnT" firstAttribute="centerY" secondItem="O2r-J3-bTU" secondAttribute="centerY" id="2k5-7d-Qnh"/>
+                            <constraint firstItem="O2r-J3-bTU" firstAttribute="leading" secondItem="QGZ-b4-zCe" secondAttribute="leading" constant="16" id="6SN-hw-xbE"/>
                             <constraint firstAttribute="trailing" secondItem="Cut-U1-rk1" secondAttribute="trailing" id="E6A-QZ-cyO"/>
                             <constraint firstItem="nUF-ND-VCt" firstAttribute="leading" secondItem="oBa-W5-Ood" secondAttribute="leading" id="EYB-AI-Ffb"/>
+                            <constraint firstItem="P3H-8W-XyV" firstAttribute="centerY" secondItem="O2r-J3-bTU" secondAttribute="centerY" id="KAc-Df-l9D"/>
+                            <constraint firstItem="gZh-H7-kgW" firstAttribute="centerY" secondItem="O2r-J3-bTU" secondAttribute="centerY" id="Kh9-jX-vPy"/>
                             <constraint firstAttribute="bottom" secondItem="Cut-U1-rk1" secondAttribute="bottom" id="MCz-us-8An"/>
+                            <constraint firstItem="PUB-9y-xnT" firstAttribute="centerX" secondItem="O2r-J3-bTU" secondAttribute="centerX" id="QTa-4L-EEJ"/>
                             <constraint firstItem="gZh-H7-kgW" firstAttribute="centerX" secondItem="oBa-W5-Ood" secondAttribute="centerX" id="SM1-Th-JHm"/>
+                            <constraint firstItem="P3H-8W-XyV" firstAttribute="centerX" secondItem="O2r-J3-bTU" secondAttribute="centerX" id="YSI-fX-VaT"/>
                             <constraint firstItem="Cut-U1-rk1" firstAttribute="leading" secondItem="oBa-W5-Ood" secondAttribute="leading" id="d0k-tx-Loq"/>
                             <constraint firstItem="nUF-ND-VCt" firstAttribute="top" secondItem="oBa-W5-Ood" secondAttribute="top" id="h46-7j-g2z"/>
                             <constraint firstItem="Cut-U1-rk1" firstAttribute="top" secondItem="oBa-W5-Ood" secondAttribute="top" id="mSU-jC-wbY"/>
@@ -52,6 +82,11 @@
                         <outlet property="cameraView" destination="Cut-U1-rk1" id="Drx-Vj-hkf"/>
                         <outlet property="captureButton" destination="gZh-H7-kgW" id="ekE-dA-IKu"/>
                         <outlet property="focusView" destination="nUF-ND-VCt" id="nbD-vs-9c4"/>
+                        <outlet property="height" destination="YIM-fL-SCv" id="8P9-XS-R8h"/>
+                        <outlet property="queue" destination="PUB-9y-xnT" id="nxu-7W-URh"/>
+                        <outlet property="thumbnail" destination="O2r-J3-bTU" id="qNS-BB-ydj"/>
+                        <outlet property="thumbnailImage" destination="P3H-8W-XyV" id="ajq-QZ-Rs9"/>
+                        <outlet property="width" destination="012-nM-fiz" id="wJ1-28-iys"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="igj-I4-czO" sceneMemberID="firstResponder"/>
