@@ -117,7 +117,7 @@ class CameraViewController: UIViewController {
             return nil
         }
         
-        let offset = abs((CGFloat(cgImage.width) - CGFloat(cgImage.height)) / 2)
+        let offset = abs(CGFloat(cgImage.width - cgImage.height) / 2)
         let newSize = CGFloat(min(cgImage.width, cgImage.height))
         
         let cropRect: CGRect
