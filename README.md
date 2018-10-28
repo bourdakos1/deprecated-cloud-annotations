@@ -83,7 +83,7 @@ Install the requirements:
 pip install -r keras_requirements.txt
 ```
 
-Create a `.env` file with your Object Storage credentials:
+Add your Object Storage credentials to the `.Credentials` file:
 ```
 API_KEY=
 RESOURCE_INSTANCE_ID=
@@ -91,5 +91,5 @@ RESOURCE_INSTANCE_ID=
 
 Run the script:
 ```
-python keras_mobilenet.py --bucket MY_BUCKET_NAME
+python keras_mobilenet.py
 ```
