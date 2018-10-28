@@ -91,5 +91,5 @@ RESOURCE_INSTANCE_ID=
 
 Run the script:
 ```
-python keras_mobilenet.py --bucket MY_BUCKET_NAME
+python keras_mobilenet.py
 ```
