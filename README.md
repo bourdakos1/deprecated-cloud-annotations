@@ -112,3 +112,5 @@ open .
 Then double click the \<ProjectName\>.xcodeproj file to open the project in Xcode.
 
 For both, your will need to add your Object Storage credentials to the `Credentials.plist` file found in your project after opening it in Xcode.
+
+If you're new to iOS development you can follow [this tutorial](https://watson-developer-cloud.github.io/watson-vision-coreml-code-pattern/advanced/11_deploy-to-iphone.html) for a walkthrough of deploying the app to your phone.
