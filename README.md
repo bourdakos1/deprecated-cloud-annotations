@@ -109,6 +109,6 @@ An easy way to open the project folder is to run:
 open .
 ```
 
-Then double click the <ProjectName>.xcodeproj file to open the project in Xcode.
+Then double click the \<ProjectName\>.xcodeproj file to open the project in Xcode.
 
 For both, your will need to add your Object Storage credentials to the `Credentials.plist` file found in your project after opening it in Xcode.
