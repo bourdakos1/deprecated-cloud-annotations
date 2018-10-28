@@ -60,6 +60,8 @@ https://testannotations.us-east.containers.appdomain.cloud
 Just add your object storage credentials and ideally the rest should be pretty self explanatory 🤞.
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539807682825_Screen+Shot+2018-10-17+at+4.21.05+PM.png)
 
+> [Sample Training Data](https://github.com/bourdakos1/Cloud-Annotations/releases/download/v1.0/workshop-training-data.zip)
+
 ## Training a Model
 > **Requirements:** python 3.5 or 3.6 (NOT 3.7)
 > 
