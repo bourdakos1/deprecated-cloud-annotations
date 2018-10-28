@@ -97,3 +97,6 @@ python keras_mobilenet.py
 ```
 
 ## Setting up the iOS Apps
+Two iOS apps are provided. One to collect data, and the other pulls the most recent version of your model and allows you to run inferences with it.
+
+For both your will need to add your Object Storage credentials to the `Credentials.plist` file found in your project after opening it in Xcode.
