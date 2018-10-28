@@ -99,4 +99,16 @@ python keras_mobilenet.py
 ## Setting up the iOS Apps
 Two iOS apps are provided. One to collect data, and the other pulls the most recent version of your model and allows you to run inferences with it.
 
-For both your will need to add your Object Storage credentials to the `Credentials.plist` file found in your project after opening it in Xcode.
+If you haven't done so already, clone the repo and cd into the root directory:
+```bash
+git clone https://github.com/bourdakos1/Cloud-Annotations.git && cd Cloud-Annotations
+```
+
+An easy way to open the project folder is to run:
+```bash
+open .
+```
+
+Then double click the <ProjectName>.xcodeproj file to open the project in Xcode.
+
+For both, your will need to add your Object Storage credentials to the `Credentials.plist` file found in your project after opening it in Xcode.
