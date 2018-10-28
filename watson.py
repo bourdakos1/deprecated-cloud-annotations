@@ -12,7 +12,7 @@ from botocore.client import Config
 from watson_developer_cloud import VisualRecognitionV3, WatsonApiException
 from tqdm import tqdm
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv('.Credentials')
 
 def __iter__(self): return 0
 def pandas_support(csv):
