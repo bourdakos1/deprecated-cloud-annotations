@@ -120,11 +120,32 @@ cos = ibm_boto3.resource('s3',
 ################################################################################
 train_dir = 'train'
 
+def askForBucket():
+    bucket_list = []
+    for i, bucket in enumerate(cos.buckets.all()):
+        bucket_list.append(bucket.name)
+        print('  {}) {}'.format(i + 1, bucket.name))
+
+    bucket_id_name = input("Bucket: ")
+
+    if bucket_id_name in bucket_list:
+        credentials_1['bucket'] = bucket_id_name
+    else:
+        try:
+           bucket_id_name = int(bucket_id_name)
+           if bucket_id_name < len(bucket_list):
+               credentials_1['bucket'] = bucket_list[bucket_id_name - 1]
+           else:
+               print('\nPlease choose a valid bucket:')
+               askForBucket()
+        except ValueError:
+            print('\nPlease choose a valid bucket:')
+            askForBucket()
+
 if credentials_1['bucket'] == None:
     print('\nPlease choose a bucket:')
-    for i, bucket in enumerate(cos.buckets.all()):
-        print('  {}) {}'.format(i + 1, bucket.name))
-    credentials_1['bucket'] = input("Bucket name: ")
+    askForBucket()
+
 
 # Get csv of annotations (url, label).
 annotations = cos.Object(credentials_1['bucket'], '_annotations.csv').get()['Body']
