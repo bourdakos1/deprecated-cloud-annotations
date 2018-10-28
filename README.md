@@ -95,3 +95,5 @@ Run the script:
 ```
 python keras_mobilenet.py
 ```
+
+## Setting up the iOS Apps
