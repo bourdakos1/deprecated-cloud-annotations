@@ -18,7 +18,7 @@ from keras.callbacks import ModelCheckpoint
 from keras.utils.generic_utils import CustomObjectScope
 from coremltools.converters.keras import convert
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv('.Credentials')
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
