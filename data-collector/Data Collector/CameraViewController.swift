@@ -34,12 +34,24 @@ class CameraViewController: UIViewController {
 
     // MARK: - Variable Declarations
     
+    let resourceId: String = {
+        guard let path = Bundle.main.path(forResource: "Credentials", ofType: "plist") else {
+            // Please create a Credentials.plist file with your Object Storage credentials.
+            fatalError()
+        }
+        guard let resourceId = NSDictionary(contentsOfFile: path)?["resourceId"] as? String else {
+            // No Object Storage Resource Instance ID found. Make sure you add your Resource Instance ID to the Credentials.plist file.
+            fatalError()
+        }
+        return resourceId
+    }()
+    
     let cloudVision: CloudVision = {
         guard let path = Bundle.main.path(forResource: "Credentials", ofType: "plist") else {
             // Please create a Credentials.plist file with your Object Storage credentials.
             fatalError()
         }
-        guard let apiKey = NSDictionary(contentsOfFile: path)?["apikey"] as? String else {
+        guard let apiKey = NSDictionary(contentsOfFile: path)?["apiKey"] as? String else {
             // No Object Storage API key found. Make sure you add your API key to the Credentials.plist file.
             fatalError()
         }
@@ -94,7 +106,7 @@ class CameraViewController: UIViewController {
         }
         pickerView.reloadData()
         
-        cloudVision.getBucketList(resourceId: CloudVisionConstants.resourceId) { buckets, error in
+        cloudVision.getBucketList(resourceId: resourceId) { buckets, error in
             DispatchQueue.main.async {
                 guard let buckets = buckets else {
                     return
