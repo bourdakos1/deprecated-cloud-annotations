@@ -110,15 +110,31 @@ class CameraViewController: UIViewController {
         }
         pickerView.reloadData()
         
+        var modelList = [String]()
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.enter()
         cloudVision.getBucketList(resourceId: resourceId) { buckets, error in
-            DispatchQueue.main.async {
-                guard let buckets = buckets else {
-                    return
-                }
-                self.buckets = buckets
-                self.pickerView.reloadData()
-                self.pickerView.selectItem(self.selectionIndex)
+            defer { dispatchGroup.leave() }
+            guard let buckets = buckets else {
+                return
             }
+            for bucket in buckets {
+                dispatchGroup.enter()
+                self.cloudVision.getLatestModelDate(bucketId: bucket, modelBranch: CloudVisionConstants.modelBranch) { date, error in
+                    defer { dispatchGroup.leave() }
+                    
+                    guard let _ = date else {
+                        return
+                    }
+                    modelList.append(bucket)
+                }
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.buckets = modelList
+            self.pickerView.reloadData()
+            self.pickerView.selectItem(self.selectionIndex)
         }
     }
     
