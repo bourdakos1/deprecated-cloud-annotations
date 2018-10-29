@@ -4,6 +4,7 @@ import uuid
 import shutil
 import types
 import pandas as pd
+import pickle
 import keras
 import argparse
 import ibm_boto3
@@ -45,6 +46,9 @@ def upload_as_coreml(cos, bucket, class_labels):
         'relu6': keras.applications.mobilenet.relu6,
         'DepthwiseConv2D': keras.applications.mobilenet.DepthwiseConv2D
     }):
+        with open('{}.labels'.format(keras_path), 'wb') as fp:
+            pickle.dump(class_labels, fp)
+
         coreml_model = convert(
             keras_path,
             input_names='image',
