@@ -62,6 +62,17 @@ Just add your object storage credentials and ideally the rest should be pretty s
 
 > [Sample Training Data](https://github.com/bourdakos1/Cloud-Annotations/releases/download/v1.0/workshop-training-data.zip)
 
+## Adding Credentials to the Project
+Clone the repo:
+```bash
+git clone https://github.com/bourdakos1/Cloud-Annotations.git && cd Cloud-Annotations
+```
+
+Run the login script to prefill credentials into your project:
+```bash
+./login.sh
+```
+
 ## Training a Model
 > **Requirements:** python 3.5 or 3.6 (NOT 3.7)
 > 
@@ -75,20 +86,9 @@ Just add your object storage credentials and ideally the rest should be pretty s
 > 
 > `brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb`
 
-Clone the repo:
-```bash
-git clone https://github.com/bourdakos1/Cloud-Annotations.git && cd Cloud-Annotations
-```
-
 Install the requirements:
 ```bash
 pip install -r keras_requirements.txt
-```
-
-Add your Object Storage credentials to the `.Credentials` file:
-```
-API_KEY=
-RESOURCE_INSTANCE_ID=
 ```
 
 Run the script:
@@ -99,18 +99,11 @@ python keras_mobilenet.py
 ## Setting up the iOS Apps
 Two iOS apps are provided. One to collect data, and the other pulls the most recent version of your model and allows you to run inferences with it.
 
-If you haven't done so already, clone the repo and cd into the root directory:
-```bash
-git clone https://github.com/bourdakos1/Cloud-Annotations.git && cd Cloud-Annotations
-```
-
 An easy way to open the project folder is to run:
 ```bash
 open .
 ```
 
 Then double click the \<ProjectName\>.xcodeproj file to open the project in Xcode.
-
-For both, your will need to add your Object Storage credentials to the `Credentials.plist` file found in your project after opening it in Xcode.
 
 If you're new to iOS development you can follow [this tutorial](https://watson-developer-cloud.github.io/watson-vision-coreml-code-pattern/advanced/11_deploy-to-iphone.html) for a walkthrough of deploying the app to your phone.
