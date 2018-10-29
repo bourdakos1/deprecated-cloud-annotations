@@ -25,22 +25,42 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Focus" translatesAutoresizingMaskIntoConstraints="NO" id="nUF-ND-VCt">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="BottomScrim" translatesAutoresizingMaskIntoConstraints="NO" id="Gwm-dz-9QD">
+                                <rect key="frame" x="0.0" y="579" width="375" height="88"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="88" id="LDK-Hf-TDa"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Select" translatesAutoresizingMaskIntoConstraints="NO" id="Ma4-gg-wfT">
+                                <rect key="frame" x="181.5" y="661" width="12" height="6"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="6" id="tr7-uS-YzO"/>
+                                    <constraint firstAttribute="width" constant="12" id="ykx-AV-kV4"/>
+                                </constraints>
+                            </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7ae-E7-VGZ" customClass="AKPickerView" customModule="Visual_Recognition" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="617" width="375" height="50"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="C63-Na-tpo"/>
+                                </constraints>
+                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O2r-J3-bTU">
-                                <rect key="frame" x="16" y="558.5" width="60" height="60"/>
+                                <rect key="frame" x="16" y="545.5" width="60" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="768-at-plB"/>
                                     <constraint firstAttribute="width" constant="60" id="QtB-4H-HKo"/>
                                 </constraints>
                             </view>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="P3H-8W-XyV">
-                                <rect key="frame" x="16" y="558.5" width="60" height="60"/>
+                                <rect key="frame" x="16" y="545.5" width="60" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="60" id="012-nM-fiz"/>
                                     <constraint firstAttribute="height" constant="60" id="YIM-fL-SCv"/>
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gZh-H7-kgW">
-                                <rect key="frame" x="149" y="550" width="77" height="77"/>
+                                <rect key="frame" x="149" y="537" width="77" height="77"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="77" id="R1D-hc-V8E"/>
                                     <constraint firstAttribute="width" constant="77" id="jMd-J6-2Fe"/>
@@ -51,7 +71,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PUB-9y-xnT">
-                                <rect key="frame" x="39.5" y="573" width="13" height="31.5"/>
+                                <rect key="frame" x="39.5" y="560" width="13" height="31.5"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="26"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -60,21 +80,29 @@
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="PUB-9y-xnT" firstAttribute="centerY" secondItem="O2r-J3-bTU" secondAttribute="centerY" id="2k5-7d-Qnh"/>
+                            <constraint firstItem="Gwm-dz-9QD" firstAttribute="leading" secondItem="QGZ-b4-zCe" secondAttribute="leading" id="5Hc-9c-giz"/>
                             <constraint firstItem="O2r-J3-bTU" firstAttribute="leading" secondItem="QGZ-b4-zCe" secondAttribute="leading" constant="16" id="6SN-hw-xbE"/>
+                            <constraint firstItem="7ae-E7-VGZ" firstAttribute="bottom" secondItem="QGZ-b4-zCe" secondAttribute="bottom" id="AW8-bf-aYr"/>
                             <constraint firstAttribute="trailing" secondItem="Cut-U1-rk1" secondAttribute="trailing" id="E6A-QZ-cyO"/>
+                            <constraint firstItem="Gwm-dz-9QD" firstAttribute="trailing" secondItem="QGZ-b4-zCe" secondAttribute="trailing" id="EAr-Aw-Z3a"/>
                             <constraint firstItem="nUF-ND-VCt" firstAttribute="leading" secondItem="oBa-W5-Ood" secondAttribute="leading" id="EYB-AI-Ffb"/>
                             <constraint firstItem="P3H-8W-XyV" firstAttribute="centerY" secondItem="O2r-J3-bTU" secondAttribute="centerY" id="KAc-Df-l9D"/>
                             <constraint firstItem="gZh-H7-kgW" firstAttribute="centerY" secondItem="O2r-J3-bTU" secondAttribute="centerY" id="Kh9-jX-vPy"/>
                             <constraint firstAttribute="bottom" secondItem="Cut-U1-rk1" secondAttribute="bottom" id="MCz-us-8An"/>
                             <constraint firstItem="PUB-9y-xnT" firstAttribute="centerX" secondItem="O2r-J3-bTU" secondAttribute="centerX" id="QTa-4L-EEJ"/>
+                            <constraint firstItem="QGZ-b4-zCe" firstAttribute="bottom" secondItem="gZh-H7-kgW" secondAttribute="bottom" constant="53" id="Qtj-xH-0A1"/>
                             <constraint firstItem="gZh-H7-kgW" firstAttribute="centerX" secondItem="oBa-W5-Ood" secondAttribute="centerX" id="SM1-Th-JHm"/>
+                            <constraint firstItem="Gwm-dz-9QD" firstAttribute="bottom" secondItem="QGZ-b4-zCe" secondAttribute="bottom" id="U92-WC-tLf"/>
                             <constraint firstItem="P3H-8W-XyV" firstAttribute="centerX" secondItem="O2r-J3-bTU" secondAttribute="centerX" id="YSI-fX-VaT"/>
+                            <constraint firstItem="7ae-E7-VGZ" firstAttribute="trailing" secondItem="QGZ-b4-zCe" secondAttribute="trailing" id="a8w-3h-CIF"/>
                             <constraint firstItem="Cut-U1-rk1" firstAttribute="leading" secondItem="oBa-W5-Ood" secondAttribute="leading" id="d0k-tx-Loq"/>
+                            <constraint firstItem="Ma4-gg-wfT" firstAttribute="bottom" secondItem="QGZ-b4-zCe" secondAttribute="bottom" id="epo-Qf-kyo"/>
+                            <constraint firstItem="7ae-E7-VGZ" firstAttribute="leading" secondItem="QGZ-b4-zCe" secondAttribute="leading" id="ggW-p0-9uq"/>
                             <constraint firstItem="nUF-ND-VCt" firstAttribute="top" secondItem="oBa-W5-Ood" secondAttribute="top" id="h46-7j-g2z"/>
+                            <constraint firstItem="Ma4-gg-wfT" firstAttribute="centerX" secondItem="oBa-W5-Ood" secondAttribute="centerX" id="ldu-1Z-C23"/>
                             <constraint firstItem="Cut-U1-rk1" firstAttribute="top" secondItem="oBa-W5-Ood" secondAttribute="top" id="mSU-jC-wbY"/>
                             <constraint firstAttribute="trailing" secondItem="nUF-ND-VCt" secondAttribute="trailing" id="my1-eN-yWY"/>
                             <constraint firstAttribute="bottom" secondItem="nUF-ND-VCt" secondAttribute="bottom" id="rzH-rM-aeH"/>
-                            <constraint firstItem="QGZ-b4-zCe" firstAttribute="bottom" secondItem="gZh-H7-kgW" secondAttribute="bottom" constant="40" id="w0b-7f-hRP"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="QGZ-b4-zCe"/>
                     </view>
@@ -83,6 +111,7 @@
                         <outlet property="captureButton" destination="gZh-H7-kgW" id="ekE-dA-IKu"/>
                         <outlet property="focusView" destination="nUF-ND-VCt" id="nbD-vs-9c4"/>
                         <outlet property="height" destination="YIM-fL-SCv" id="8P9-XS-R8h"/>
+                        <outlet property="pickerView" destination="7ae-E7-VGZ" id="sfL-Jv-hRi"/>
                         <outlet property="queue" destination="PUB-9y-xnT" id="nxu-7W-URh"/>
                         <outlet property="thumbnail" destination="O2r-J3-bTU" id="qNS-BB-ydj"/>
                         <outlet property="thumbnailImage" destination="P3H-8W-XyV" id="ajq-QZ-Rs9"/>
@@ -95,7 +124,9 @@
         </scene>
     </scenes>
     <resources>
+        <image name="BottomScrim" width="41" height="133"/>
         <image name="Capture" width="232" height="232"/>
         <image name="Focus" width="1242" height="1242"/>
+        <image name="Select" width="36" height="18"/>
     </resources>
 </document>

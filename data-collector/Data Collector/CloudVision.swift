@@ -21,7 +21,7 @@ class CloudVision {
     func uploadImage(image: UIImage, bucketId: String, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
         let fileName = "\(UUID().uuidString.lowercased()).jpg"
         
-        guard let data = UIImageJPEGRepresentation(image, 1) else {
+        guard let data = image.jpegData(compressionQuality: 1) else {
             let description = "Bad image"
             let userInfo = [NSLocalizedDescriptionKey: description]
             let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
@@ -314,6 +314,50 @@ class CloudVision {
                 let dateModified = dateFormatter.date(from: modified)
                 
                 completion?(dateModified, nil)
+            }
+            task.resume()
+        }
+    }
+    
+    public func getBucketList(resourceId: String, completion: (([String]?, Error?) -> Void)? = nil) {
+        guard let url = URL(string: "https://\(self.endpoint)/") else {
+            let description = "Bad url"
+            let userInfo = [NSLocalizedDescriptionKey: description]
+            let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+            completion?(nil, error)
+            return
+        }
+        
+        getToken() { token, error in
+            guard let token = token else {
+                let description = "Failed to authenticate"
+                let userInfo = [NSLocalizedDescriptionKey: description]
+                let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                completion?(nil, error)
+                return
+            }
+            
+            let sessionConfig = URLSessionConfiguration.default
+            let session = URLSession(configuration: sessionConfig)
+            var request = URLRequest(url: url)
+            request.setValue("bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue(resourceId, forHTTPHeaderField: "ibm-service-instance-id")
+            request.httpMethod = "GET"
+            
+            let task = session.dataTask(with: request) { (data, response, error) in
+                guard let data = data else {
+                    let description = "Failed get bucket"
+                    let userInfo = [NSLocalizedDescriptionKey: description]
+                    let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                    completion?(nil, error)
+                    return
+                }
+                
+                let parser = BucketListParser(data: data)
+                parser.parse() { buckets in
+                    completion?(buckets, nil)
+                    return
+                }
             }
             task.resume()
         }
