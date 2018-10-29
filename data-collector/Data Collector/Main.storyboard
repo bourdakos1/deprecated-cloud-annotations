@@ -38,7 +38,7 @@
                                     <constraint firstAttribute="width" constant="12" id="ykx-AV-kV4"/>
                                 </constraints>
                             </imageView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7ae-E7-VGZ" customClass="AKPickerView" customModule="Visual_Recognition" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7ae-E7-VGZ" customClass="AKPickerView" customModule="Data_Collector" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="617" width="375" height="50"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>

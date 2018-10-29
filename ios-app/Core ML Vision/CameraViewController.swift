@@ -33,15 +33,28 @@ class CameraViewController: UIViewController {
     @IBOutlet weak var choosePhotoButton: UIButton!
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var alphaSlider: UISlider!
+    @IBOutlet weak var pickerView: AKPickerView!
     
     // MARK: - Variable Declarations
+    
+    let resourceId: String = {
+        guard let path = Bundle.main.path(forResource: "Credentials", ofType: "plist") else {
+            // Please create a Credentials.plist file with your Object Storage credentials.
+            fatalError()
+        }
+        guard let resourceId = NSDictionary(contentsOfFile: path)?["resourceId"] as? String else {
+            // No Object Storage Resource Instance ID found. Make sure you add your Resource Instance ID to the Credentials.plist file.
+            fatalError()
+        }
+        return resourceId
+    }()
     
     let cloudVision: CloudVision = {
         guard let path = Bundle.main.path(forResource: "Credentials", ofType: "plist") else {
             // Please create a Credentials.plist file with your Object Storage credentials.
             fatalError()
         }
-        guard let apiKey = NSDictionary(contentsOfFile: path)?["apikey"] as? String else {
+        guard let apiKey = NSDictionary(contentsOfFile: path)?["apiKey"] as? String else {
             // No Object Storage API key found. Make sure you add your API key to the Credentials.plist file.
             fatalError()
         }
@@ -75,11 +88,38 @@ class CameraViewController: UIViewController {
     var editedImage = UIImage()
     var originalConfs = [VNClassificationObservation]()
     var heatmaps = [String: HeatmapImages]()
+    var selectionIndex = 0
+    var buckets = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         captureSession?.startRunning()
         resetUI()
+        
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        pickerView.interitemSpacing = CGFloat(25.0)
+        pickerView.pickerViewStyle = .flat
+        pickerView.maskDisabled = true
+        pickerView.font = UIFont.boldSystemFont(ofSize: 14)
+        pickerView.highlightedFont = UIFont.boldSystemFont(ofSize: 14)
+        pickerView.highlightedTextColor = UIColor.white
+        pickerView.textColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.6)
+        if let lastBucket = UserDefaults.standard.string(forKey: "bucket_id") {
+            buckets.append(lastBucket)
+        }
+        pickerView.reloadData()
+        
+        cloudVision.getBucketList(resourceId: resourceId) { buckets, error in
+            DispatchQueue.main.async {
+                guard let buckets = buckets else {
+                    return
+                }
+                self.buckets = buckets
+                self.pickerView.reloadData()
+                self.pickerView.selectItem(self.selectionIndex)
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -88,11 +128,13 @@ class CameraViewController: UIViewController {
             return
         }
         drawer.delegate = self
-        
-        cloudVision.getLatestModelDate(bucketId: CloudVisionConstants.bucketId, modelBranch: CloudVisionConstants.modelBranch) { date, error in
+    }
+    
+    func checkUpdates(forBucket bucketId: String) {
+        cloudVision.getLatestModelDate(bucketId: bucketId, modelBranch: CloudVisionConstants.modelBranch) { date, error in
             DispatchQueue.main.async {
                 guard let cloudModelLastModified = date else {
-                    self.modelUpdateFail(bucketId: CloudVisionConstants.bucketId, error: error ?? NSError())
+                    self.modelUpdateFail(bucketId: bucketId, error: error ?? NSError())
                     return
                 }
                 let defaults = UserDefaults.standard
@@ -106,10 +148,10 @@ class CameraViewController: UIViewController {
                 
                 // Download the cloud model.
                 SwiftSpinner.show("Compiling model...")
-                self.cloudVision.downloadModel(bucketId: CloudVisionConstants.bucketId, modelBranch: CloudVisionConstants.modelBranch) { _, error in
+                self.cloudVision.downloadModel(bucketId: bucketId, modelBranch: CloudVisionConstants.modelBranch) { _, error in
                     DispatchQueue.main.async {
                         if let error = error {
-                            self.modelUpdateFail(bucketId: CloudVisionConstants.bucketId, error: error)
+                            self.modelUpdateFail(bucketId: bucketId, error: error)
                         } else {
                             defaults.set(cloudModelLastModified, forKey: "lastModified")
                         }
@@ -135,7 +177,11 @@ class CameraViewController: UIViewController {
             return
         }
         
-        CloudVision.classify(image: cgImage, bucketId: CloudVisionConstants.bucketId) { classifications, error in
+        guard let bucketId = UserDefaults.standard.string(forKey: "bucket_id") else {
+            return
+        }
+        
+        CloudVision.classify(image: cgImage, bucketId: bucketId) { classifications, error in
             // Make sure that an image was successfully classified.
             guard let classifications = classifications else {
                 return
@@ -180,7 +226,10 @@ class CameraViewController: UIViewController {
                     guard let cgImage = maskedImage.cgImage else {
                         return
                     }
-                    CloudVision.classify(image: cgImage, bucketId: CloudVisionConstants.bucketId) { [down, right] classifications, _ in
+                    guard let bucketId = UserDefaults.standard.string(forKey: "bucket_id") else {
+                        return
+                    }
+                    CloudVision.classify(image: cgImage, bucketId: bucketId) { [down, right] classifications, _ in
                         
                         defer { dispatchGroup.leave() }
                         
@@ -360,8 +409,8 @@ class CameraViewController: UIViewController {
 
 extension CameraViewController {
     func showAlert(_ alertTitle: String, alertMessage: String) {
-        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
     
@@ -396,10 +445,10 @@ extension CameraViewController {
 // MARK: - UIImagePickerControllerDelegate
 
 extension CameraViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String: Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
         
-        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
+        guard let image = info[.originalImage] as? UIImage else {
             return
         }
         
@@ -432,4 +481,35 @@ extension CameraViewController: TableViewControllerSelectionDelegate {
     }
 }
 
+// MARK: - AKPickerViewDataSource
 
+extension CameraViewController: AKPickerViewDataSource {
+    func numberOfItemsInPickerView(_ pickerView: AKPickerView) -> Int {
+        return max(buckets.count, 1)
+    }
+    
+    func pickerView(_ pickerView: AKPickerView, titleForItem item: Int) -> String {
+        if buckets.count <= 0 {
+            return "Loading..."
+        }
+        
+        // Find the selection index of our default.
+        if buckets[item] == UserDefaults.standard.string(forKey: "bucket_id") {
+            selectionIndex = item
+        }
+        
+        return buckets[item]
+    }
+}
+
+// MARK: - AKPickerViewDelegate
+
+extension CameraViewController: AKPickerViewDelegate {
+    func pickerView(_ pickerView: AKPickerView, didSelectItem item: Int) {
+        if buckets.count > 0 {
+            print("setting bucket \(buckets[item])")
+            UserDefaults.standard.set(buckets[item], forKey: "bucket_id")
+            checkUpdates(forBucket: buckets[item])
+        }
+    }
+}

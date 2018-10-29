@@ -5,7 +5,7 @@
 //  Created by Nicholas Bourdakos on 10/16/18.
 //
 
-import Foundation
+import UIKit
 import CoreML
 import Vision
 
@@ -16,6 +16,50 @@ class CloudVision {
     init(endpoint: String, apiKey: String) {
         self.endpoint = endpoint
         self.apiKey = apiKey
+    }
+    
+    func uploadImage(image: UIImage, bucketId: String, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        let fileName = "\(UUID().uuidString.lowercased()).jpg"
+        
+        guard let data = image.jpegData(compressionQuality: 1) else {
+            let description = "Bad image"
+            let userInfo = [NSLocalizedDescriptionKey: description]
+            let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+            completion(nil, nil, error)
+            return
+        }
+        
+        guard let url = URL(string: "https://\(self.endpoint)/\(bucketId)/\(fileName)") else {
+            let description = "Bad url"
+            let userInfo = [NSLocalizedDescriptionKey: description]
+            let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+            completion(nil, nil, error)
+            return
+        }
+        
+        getToken() { token, error in
+            guard let token = token else {
+                let description = "Failed to authenticate"
+                let userInfo = [NSLocalizedDescriptionKey: description]
+                let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                completion(nil, nil, error)
+                return
+            }
+            
+            let sessionConfig = URLSessionConfiguration.default
+            let session = URLSession(configuration: sessionConfig)
+            var request = URLRequest(url: url)
+            
+            request.httpMethod = "PUT"
+            request.setValue("bearer \(token)", forHTTPHeaderField: "Authorization")
+            
+            request.setValue(String(data.count), forHTTPHeaderField: "Content-Length")
+            
+            request.httpBody = data
+            
+            let task = session.dataTask(with: request, completionHandler: completion)
+            task.resume()
+        }
     }
     
     class func classify(image: CGImage, bucketId: String, completion: @escaping ([VNClassificationObservation]?, Error?) -> Void) {
@@ -80,7 +124,7 @@ class CloudVision {
             }
         }
     }
-
+    
     /**
      Load a Core ML model from disk. The model must be named "[classifier-id].mlmodelc" and reside in the
      application support directory or main bundle.
@@ -122,7 +166,7 @@ class CloudVision {
         let session = URLSession(configuration: sessionConfig)
         var request = URLRequest(url: url)
         request.setValue("bearer \(token)", forHTTPHeaderField: "Authorization")
-
+        
         // create a task to execute the request
         let task = session.downloadTask(with: request) { (location, response, error) in
             // ensure there is no underlying error
@@ -170,11 +214,11 @@ class CloudVision {
     
     private func getToken(completion: @escaping (String?, Error?) -> Void) {
         guard let authUrl = URL(string: "https://iam.ng.bluemix.net/oidc/token?apikey=\(self.apiKey)&response_type=cloud_iam&grant_type=urn:ibm:params:oauth:grant-type:apikey") else {
-                let description = "Bad url"
-                let userInfo = [NSLocalizedDescriptionKey: description]
-                let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
-                completion(nil, error)
-                return
+            let description = "Bad url"
+            let userInfo = [NSLocalizedDescriptionKey: description]
+            let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+            completion(nil, error)
+            return
         }
         
         let sessionConfig = URLSessionConfiguration.default
@@ -275,6 +319,50 @@ class CloudVision {
         }
     }
     
+    public func getBucketList(resourceId: String, completion: (([String]?, Error?) -> Void)? = nil) {
+        guard let url = URL(string: "https://\(self.endpoint)/") else {
+            let description = "Bad url"
+            let userInfo = [NSLocalizedDescriptionKey: description]
+            let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+            completion?(nil, error)
+            return
+        }
+        
+        getToken() { token, error in
+            guard let token = token else {
+                let description = "Failed to authenticate"
+                let userInfo = [NSLocalizedDescriptionKey: description]
+                let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                completion?(nil, error)
+                return
+            }
+            
+            let sessionConfig = URLSessionConfiguration.default
+            let session = URLSession(configuration: sessionConfig)
+            var request = URLRequest(url: url)
+            request.setValue("bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue(resourceId, forHTTPHeaderField: "ibm-service-instance-id")
+            request.httpMethod = "GET"
+            
+            let task = session.dataTask(with: request) { (data, response, error) in
+                guard let data = data else {
+                    let description = "Failed get bucket"
+                    let userInfo = [NSLocalizedDescriptionKey: description]
+                    let error = NSError(domain: Bundle.main.bundleIdentifier ?? "", code: 0, userInfo: userInfo)
+                    completion?(nil, error)
+                    return
+                }
+                
+                let parser = BucketListParser(data: data)
+                parser.parse() { buckets in
+                    completion?(buckets, nil)
+                    return
+                }
+            }
+            task.resume()
+        }
+    }
+    
     /**
      Download a Core ML model to the local filesystem. The model is compiled and moved to the application support
      directory with a filename of `[classifier-id].mlmodelc`.
@@ -292,7 +380,7 @@ class CloudVision {
             completion?(nil, error)
             return
         }
-    
+        
         getToken() { token, error in
             guard let token = token else {
                 let description = "Failed to authenticate"
