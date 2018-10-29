@@ -73,6 +73,18 @@ Run the login script to prefill credentials into your project:
 ./login.sh
 ```
 
+## Setting up the iOS Apps
+Two iOS apps are provided. One to collect data, and the other pulls the most recent version of your model and allows you to run inferences with it.
+
+An easy way to open the project folder is to run:
+```bash
+open .
+```
+
+Then double click the \<ProjectName\>.xcodeproj file to open the project in Xcode.
+
+If you're new to iOS development you can follow [this tutorial](https://watson-developer-cloud.github.io/watson-vision-coreml-code-pattern/advanced/11_deploy-to-iphone.html) for a walkthrough of deploying the app to your phone.
+
 ## Training a Model
 > **Requirements:** python 3.5 or 3.6 (NOT 3.7)
 > 
@@ -95,15 +107,3 @@ Run the script:
 ```
 python keras_mobilenet.py
 ```
-
-## Setting up the iOS Apps
-Two iOS apps are provided. One to collect data, and the other pulls the most recent version of your model and allows you to run inferences with it.
-
-An easy way to open the project folder is to run:
-```bash
-open .
-```
-
-Then double click the \<ProjectName\>.xcodeproj file to open the project in Xcode.
-
-If you're new to iOS development you can follow [this tutorial](https://watson-developer-cloud.github.io/watson-vision-coreml-code-pattern/advanced/11_deploy-to-iphone.html) for a walkthrough of deploying the app to your phone.
