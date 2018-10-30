@@ -109,11 +109,7 @@ Run the script:
 python keras_mobilenet.py
 ```
 
-> **Note for Windows users:** `coremltools` doesn't work on windows run:
->
-> `python keras_mobilenet.py --no-coreml`
->
-> To train the model without the conversion to Core ML
+> **Note for Windows users:** `coremltools` doesn't work on windows. Run `python keras_mobilenet.py --no-coreml` to train the model without the conversion to Core ML.
 
 ## Testing the Model with Python
 Run the script:
