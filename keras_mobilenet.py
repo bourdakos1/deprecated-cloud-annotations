@@ -17,7 +17,6 @@ from keras.layers import Conv2D, Reshape, Activation, GlobalAveragePooling2D, De
 from keras.callbacks import Callback
 from keras.callbacks import ModelCheckpoint
 from keras.utils.generic_utils import CustomObjectScope
-from coremltools.converters.keras import convert
 from dotenv import load_dotenv
 load_dotenv('.Credentials')
 
@@ -28,10 +27,24 @@ parser.add_argument(
     action='store_true'
 )
 parser.add_argument(
+    '--no-coreml',
+    help='Dissable coremltools for Windows support.',
+    action='store_true'
+)
+parser.add_argument(
     '--bucket',
     help='Object Storage bucket to pull from.'
 )
 args = parser.parse_args()
+
+if not args.no_coreml:
+    CRED = '\033[91m'
+    CCODE = '\033[107m'
+    CEND = '\033[0m'
+    print(CRED + '\nUsing Core ML, Windows users please run:' + CEND)
+    print(CCODE + '                                           ' + CEND)
+    print(CCODE + '   python keras_mobilenet.py --no-coreml   ' + CEND)
+    print(CCODE + '                                           ' + CEND)
 
 def __iter__(self): return 0
 def pandas_support(csv):
@@ -46,9 +59,6 @@ def upload_as_coreml(cos, bucket, class_labels):
         'relu6': keras.applications.mobilenet.relu6,
         'DepthwiseConv2D': keras.applications.mobilenet.DepthwiseConv2D
     }):
-        with open('{}.labels'.format(keras_path), 'wb') as fp:
-            pickle.dump(class_labels, fp)
-
         coreml_model = convert(
             keras_path,
             input_names='image',
@@ -137,7 +147,7 @@ def askForBucket():
     else:
         try:
            bucket_id_name = int(bucket_id_name)
-           if bucket_id_name < len(bucket_list):
+           if bucket_id_name <= len(bucket_list):
                credentials_1['bucket'] = bucket_list[bucket_id_name - 1]
            else:
                print('\nPlease choose a valid bucket:')
@@ -273,5 +283,10 @@ history = model.fit_generator(
 )
 
 model.save(model_path)
+keras_path = credentials_1['bucket'] + '.h5'
+with open('{}.labels'.format(keras_path), 'wb') as fp:
+    pickle.dump(used_labels, fp)
 
-upload_as_coreml(cos, credentials_1['bucket'], used_labels)
+if not args.no_coreml:
+    from coremltools.converters.keras import convert
+    upload_as_coreml(cos, credentials_1['bucket'], used_labels)
