@@ -107,3 +107,9 @@ Run the script:
 ```
 python keras_mobilenet.py
 ```
+
+## Testing the Model with Python
+Run the script:
+```
+python test_image.py --model=BUCKET_ID.h5 --image=LOCAL_IMAGE_ADDRESS
+```
