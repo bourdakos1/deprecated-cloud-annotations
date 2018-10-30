@@ -14,7 +14,7 @@ STRING_REGEX="<string>.*<\/string>"
 
 
 replacePlistItem () {
-  perl -pi -e "s/$1\n/$1/" "$3"
+  perl -pi -e "s/$1[\n\r]*/$1/" "$3"
   perl -pi -e "s/$1\s*$STRING_REGEX/$1\n\t<string>$2<\/string>/" "$3"
 }
 
@@ -24,10 +24,13 @@ iOSReplace () {
 }
 
 pythonReplace () {
-  perl -pi -e "s/API_KEY=.*/API_KEY=$API_KEY/" "$1"
-  perl -pi -e "s/RESOURCE_INSTANCE_ID=.*/RESOURCE_INSTANCE_ID=$RESOURCE_ID/" "$1"
+  perl -pi -e "s/API_KEY=.*[\n\r]*/API_KEY=$API_KEY\n\r/" "$1"
+  perl -pi -e "s/RESOURCE_INSTANCE_ID=.*[\n\r]*/RESOURCE_INSTANCE_ID=$RESOURCE_ID\n\r/" "$1"
 }
 
 iOSReplace "$DATA_COLLECTOR_APP"
 iOSReplace "$INFERENCE_APP"
 pythonReplace "$PYTHON_TRAINER"
+
+echo
+echo -e "\033[92mSuccessfully set credentials!\033[0m"
