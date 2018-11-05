@@ -1,7 +1,14 @@
-*.h5
-*.h5.labels
-*.mlmodel
-train/
+.tmp/
+
+**/*.pyc
+.idea/
+**/*~
+gradle*
+libs/
+local.properties
+android.iml
+.gradle/
+android/assets/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
