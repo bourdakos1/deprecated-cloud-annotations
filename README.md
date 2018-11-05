@@ -30,7 +30,7 @@ This is your IBM Cloud dashboard where you can create and manage IBM Cloud resou
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539804685813_Screen+Shot+2018-10-17+at+2.37.27+PM.png)
 
 ## Getting Credentials
-In order for us to access our Object Storage instance, we need to create credentials for it. 
+In order for us to access our Object Storage instance, we need to create credentials for it.
 
 Create a new service credential with the role of **Writer**.
 ![](https://d2mxuefqeaa7sj.cloudfront.net/s_E7D1C1E8D801F89315B72C10AD83AE795982C7EB84F7BA48CECD8A576B02D6CC_1539807399869_Screen+Shot+2018-10-17+at+3.00.09+PM.png)
@@ -70,7 +70,7 @@ git clone https://github.com/bourdakos1/Cloud-Annotations.git && cd Cloud-Annota
 
 Run the login script to prefill credentials into your project:
 ```bash
-./login.sh
+python -m bucket.login
 ```
 
 ## Setting up the iOS Apps
@@ -87,32 +87,48 @@ If you're new to iOS development you can follow [this tutorial](https://watson-d
 
 ## Training a Model
 > **Requirements:** python 3.5 or 3.6 (NOT 3.7)
-> 
+>
 > Run `python3 --version` to check
-> 
+>
 > If you installed python with brew and have python 3.7, run:
-> 
+>
 > `brew unlink python`
 >
 > followed by:
-> 
+>
 > `brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f2a764ef944b1080be64bd88dca9a1d80130c558/Formula/python.rb`
 
 Install the requirements:
 ```bash
-pip install -r keras_requirements.txt
-pip install coremltools==2.0
+pip install -r requirements.txt
+pip install git+https://github.com/apple/coremltools
+pip install tfcoreml
 ```
 
-Run the script:
+Download our training data:
 ```
-python keras_mobilenet.py
+python -m bucket.download
 ```
 
-> **Note for Windows users:** `coremltools` doesn't work on windows. Run `python keras_mobilenet.py --no-coreml` to train the model without the conversion to Core ML.
+Retrain MobileNet with our data:
+```
+python -m scripts.retrain
+```
+
+Convert the model to Core ML and TensorFlow Lite:
+```
+python -m scripts.convert --coreml --tflite
+```
+
+Upload our mobile models back to our bucket:
+```
+python -m bucket.upload
+```
 
 ## Testing the Model with Python
-Run the script:
+Test model with a local image:
 ```
-python test_image.py --model=BUCKET_ID.h5 --image=LOCAL_IMAGE_ADDRESS
+python -m scripts.label_image \
+  --graph=.tmp/model.pb \
+  --image=LOCAL_IMAGE_ADDRESS
 ```
