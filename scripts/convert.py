@@ -1,0 +1,35 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--coreml', action='store_true')
+parser.add_argument('--tflite', action='store_true')
+parser.add_argument('--input_name', type=str, default='input')
+parser.add_argument('--output_name', type=str, default='final_result')
+parser.add_argument('--tf_model_path', type=str, default='.tmp/model.pb')
+parser.add_argument('--mlmodel_path', type=str, default='.tmp/model.mlmodel')
+parser.add_argument('--tflite_path', type=str, default='.tmp/model.tflite')
+parser.add_argument('--class_labels', type=str, default='.tmp/model.labels')
+args = parser.parse_args()
+
+if args.coreml:
+    import tfcoreml
+
+    tfcoreml.convert(tf_model_path=args.tf_model_path,
+                     mlmodel_path=args.mlmodel_path,
+                     output_feature_names=['{}:0'.format(args.output_name)],
+                     class_labels=args.class_labels,
+                     image_input_names='{}:0'.format(args.input_name))
+
+if args.tflite:
+    from tensorflow.contrib.lite.python.lite import TocoConverter
+
+    input_arrays = [args.input_name]
+    output_arrays = [args.output_name]
+
+    converter = TocoConverter.from_frozen_graph(args.tf_model_path, input_arrays, output_arrays)
+    tflite_model = converter.convert()
+    open(args.tflite_path, 'wb').write(tflite_model)

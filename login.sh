@@ -2,8 +2,8 @@
 read -p 'Resource Instance ID: ' RESOURCE_ID
 read -sp 'API Key: ' API_KEY
 
-DATA_COLLECTOR_APP=data-collector/Data\ Collector/Credentials.plist
-INFERENCE_APP=ios-app/Core\ ML\ Vision/Credentials.plist
+DATA_COLLECTOR_APP=app-ios/data-collector/Data\ Collector/Credentials.plist
+INFERENCE_APP=app-ios/ios-app/Core\ ML\ Vision/Credentials.plist
 PYTHON_TRAINER=.Credentials
 
 API_KEY_REGEX="<key>apiKey</key>"
