@@ -25,11 +25,16 @@ if args.coreml:
                      image_input_names='{}:0'.format(args.input_name))
 
 if args.tflite:
-    from tensorflow.contrib.lite.python.lite import TocoConverter
+    import tensorflow as ts
+    # TensorFlow 1.9 to TensorFlow 1.11
+    if ts.__version__ <= '1.11.0':
+        from tensorflow.contrib.lite.python.lite import TocoConverter as convert
+    else:
+        from tensorflow.contrib.lite import TFLiteConverter as convert
 
     input_arrays = [args.input_name]
     output_arrays = [args.output_name]
 
-    converter = TocoConverter.from_frozen_graph(args.tf_model_path, input_arrays, output_arrays)
+    converter = convert.from_frozen_graph(args.tf_model_path, input_arrays, output_arrays)
     tflite_model = converter.convert()
     open(args.tflite_path, 'wb').write(tflite_model)
