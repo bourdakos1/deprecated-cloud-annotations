@@ -40,6 +40,11 @@ public class ClassificationAdapter extends RecyclerView.Adapter<ClassificationAd
         mClassifications = classifications;
     }
 
+    void updateClassifications(List<Classification> classifications) {
+        mClassifications = classifications;
+        notifyDataSetChanged();
+    }
+
     @Override
     public ClassificationAdapter.ClassificationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.classification_item, parent, false);

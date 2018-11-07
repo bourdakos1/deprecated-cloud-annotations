@@ -12,16 +12,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
 
 import org.tensorflow.lite.Interpreter;
-
-import androidx.annotation.NonNull;
 
 class Classification implements Comparable<Classification> {
     String label;
@@ -118,7 +113,6 @@ class ImageClassifier {
         return buffer;
     }
 
-    /** Prints top-K labels, to be shown in UI as the results. */
     private List<Classification> scoresToClassificationList(float[] scores) {
         List<Classification> classifications = new ArrayList<>();
 
@@ -128,21 +122,6 @@ class ImageClassifier {
             i++;
         }
 
-
-//        // Use a priority queue as an easy way to sort our labels and scores.
-//        PriorityQueue<Map.Entry<String, Float>> sortedLabels =
-//                new PriorityQueue<>(mLabelList.size(), (o1, o2) -> (o2.getValue()).compareTo(o1.getValue()));
-//
-//        for (int i = 0; i < mLabelList.size(); ++i) {
-//            sortedLabels.add(new AbstractMap.SimpleEntry<>(mLabelList.get(i), scores[i]));
-//        }
-
-//        List<Map.Entry<String, Float>> sortedClassifications = new ArrayList<>();
-//        final int size = sortedLabels.size();
-//        for (int i = 0; i < size; ++i) {
-//            Map.Entry<String, Float> label = sortedLabels.poll();
-//            sortedClassifications.add(label);
-//        }
         Collections.sort(classifications);
         return classifications;
     }

@@ -33,14 +33,12 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 
 public class CustomCameraFragment extends CameraFragment {
     private CameraView mCamera;
-    private ImageView mResult;
+    private ImageView mPreview;
     private ViewGroup mCameraLayout;
     private ViewGroup mPreviewLayout;
     private ImageClassifier mClassifier;
     private BottomSheetBehavior mBottomSheetBehavior;
-
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private ClassificationAdapter mAdapter;
 
     private View.OnClickListener mBitmapCaptured = (view) -> {
         try {
@@ -53,13 +51,9 @@ public class CustomCameraFragment extends CameraFragment {
             Bitmap bitmap = textureView.getBitmap();
             Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, ImageClassifier.DIM_IMG_SIZE_X, ImageClassifier.DIM_IMG_SIZE_Y);
             List<Classification> classifications = mClassifier.classifyFrame(thumbnail);
-            mAdapter = new ClassificationAdapter(classifications);
-            mRecyclerView.setAdapter(mAdapter);
-            mResult.setImageBitmap(bitmap);
-            mCameraLayout.setVisibility(View.GONE);
-            mPreviewLayout.setVisibility(View.VISIBLE);
-            mBottomSheetBehavior.setHideable(false);
-            mBottomSheetBehavior.setState(STATE_EXPANDED);
+            mAdapter.updateClassifications(classifications);
+            mPreview.setImageBitmap(bitmap);
+            showPreview();
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -67,40 +61,49 @@ public class CustomCameraFragment extends CameraFragment {
         }
     };
 
-    private View.OnClickListener mClosePreview = (view) -> {
+    private View.OnClickListener mClosePreview = (view) -> showCamera();
+
+    private void showPreview() {
+        mCameraLayout.setVisibility(View.GONE);
+        mPreviewLayout.setVisibility(View.VISIBLE);
+        mBottomSheetBehavior.setHideable(false);
+        mBottomSheetBehavior.setState(STATE_EXPANDED);
+    }
+
+    private void showCamera() {
         mCameraLayout.setVisibility(View.VISIBLE);
         mPreviewLayout.setVisibility(View.GONE);
         mBottomSheetBehavior.setHideable(true);
         mBottomSheetBehavior.setState(STATE_HIDDEN);
-    };
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         LinearLayout bottomSheet = getActivity().findViewById(R.id.bottom_sheet);
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        mBottomSheetBehavior.setHideable(true);
-        mBottomSheetBehavior.setState(STATE_HIDDEN);
+
+        RecyclerView recyclerView = bottomSheet.findViewById(R.id.my_recycler_view);
+        recyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+
+        mAdapter = new ClassificationAdapter(new ArrayList<>());
+        recyclerView.setAdapter(mAdapter);
 
         DividerItemDecoration divider = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         divider.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
+        recyclerView.addItemDecoration(divider);
 
-        mAdapter = new ClassificationAdapter(new ArrayList<>());
-        mRecyclerView = bottomSheet.findViewById(R.id.my_recycler_view);
-
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addItemDecoration(divider);
+        showCamera();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mCamera = view.findViewById(R.id.camera);
-        mResult = view.findViewById(R.id.image_result);
+        mPreview = view.findViewById(R.id.image_result);
         mCameraLayout = view.findViewById(R.id.layout_camera);
         mPreviewLayout = view.findViewById(R.id.layout_preview);
 
