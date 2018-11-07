@@ -19,9 +19,13 @@
     package="com.example.android.tflitecamerademo">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <!-- If you're not saving the file to the SD Card, you can set a max sdk version of 18 (Jellybean) -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
 
     <uses-sdk android:minSdkVersion="21" />
 

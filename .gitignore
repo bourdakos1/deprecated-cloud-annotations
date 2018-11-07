@@ -1,4 +1,9 @@
 .tmp/
+*.tflite
+*.lite
+*.mlmodel
+*.labels
+
 
 **/*.pyc
 .idea/
