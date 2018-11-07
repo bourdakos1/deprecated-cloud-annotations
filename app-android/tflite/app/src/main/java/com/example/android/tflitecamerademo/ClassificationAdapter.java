@@ -14,10 +14,10 @@ import java.util.Map;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private List<Map.Entry<String, Float>> mData;
+public class ClassificationAdapter extends RecyclerView.Adapter<ClassificationAdapter.ClassificationViewHolder> {
+    private List<Classification> mClassifications;
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class ClassificationViewHolder extends RecyclerView.ViewHolder {
         private TextView mLabel;
         private TextView mScore;
         private ProgressBar mProgressBar;
@@ -25,7 +25,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private Drawable mYellowDrawable;
         private Drawable mGreenDrawable;
 
-        private MyViewHolder(View v) {
+        private ClassificationViewHolder(View v) {
             super(v);
             mLabel = v.findViewById(R.id.label);
             mScore = v.findViewById(R.id.score);
@@ -36,20 +36,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         }
     }
 
-    MyAdapter(List<Map.Entry<String, Float>> data) {
-        mData = data;
+    ClassificationAdapter(List<Classification> classifications) {
+        mClassifications = classifications;
     }
 
     @Override
-    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ClassificationAdapter.ClassificationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.classification_item, parent, false);
-        return new MyViewHolder(view);
+        return new ClassificationViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        String label = mData.get(position).getKey();
-        Float score = mData.get(position).getValue();
+    public void onBindViewHolder(ClassificationViewHolder holder, int position) {
+        String label = mClassifications.get(position).label;
+        Float score = mClassifications.get(position).score;
         holder.mLabel.setText(label);
         holder.mScore.setText(String.format(Locale.getDefault(), "%1.2f", score));
 
@@ -69,6 +69,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return mClassifications.size();
     }
 }

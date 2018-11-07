@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,8 +32,6 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
 
 public class CustomCameraFragment extends CameraFragment {
-    private static final String TAG = "CameraFragment";
-
     private CameraView mCamera;
     private ImageView mResult;
     private ViewGroup mCameraLayout;
@@ -44,7 +41,6 @@ public class CustomCameraFragment extends CameraFragment {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
 
     private View.OnClickListener mBitmapCaptured = (view) -> {
         try {
@@ -56,8 +52,8 @@ public class CustomCameraFragment extends CameraFragment {
             // Get the image and classify it.
             Bitmap bitmap = textureView.getBitmap();
             Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, ImageClassifier.DIM_IMG_SIZE_X, ImageClassifier.DIM_IMG_SIZE_Y);
-            List<Map.Entry<String, Float>> textToShow = mClassifier.classifyFrame(thumbnail);
-            mAdapter = new MyAdapter(textToShow);
+            List<Classification> classifications = mClassifier.classifyFrame(thumbnail);
+            mAdapter = new ClassificationAdapter(classifications);
             mRecyclerView.setAdapter(mAdapter);
             mResult.setImageBitmap(bitmap);
             mCameraLayout.setVisibility(View.GONE);
@@ -86,14 +82,17 @@ public class CustomCameraFragment extends CameraFragment {
         mBottomSheetBehavior.setHideable(true);
         mBottomSheetBehavior.setState(STATE_HIDDEN);
 
-        mRecyclerView = bottomSheet.findViewById(R.id.my_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new MyAdapter(new ArrayList<>());
-        mRecyclerView.setAdapter(mAdapter);
-        DividerItemDecoration divider = new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+
+        DividerItemDecoration divider = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         divider.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
+
+        mAdapter = new ClassificationAdapter(new ArrayList<>());
+        mRecyclerView = bottomSheet.findViewById(R.id.my_recycler_view);
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(divider);
     }
 
