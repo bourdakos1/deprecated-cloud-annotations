@@ -105,7 +105,7 @@
                                     <constraint firstAttribute="width" constant="12" id="dnc-OG-6sd"/>
                                 </constraints>
                             </imageView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="93d-rB-7ng" customClass="AKPickerView" customModule="Data_Collector" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="93d-rB-7ng" customClass="AKPickerView" customModule="Core_ML_Vision" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="617" width="375" height="50"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -160,6 +160,11 @@
                             <constraint firstItem="PQ4-s0-jJR" firstAttribute="centerY" secondItem="jV6-kf-Rrz" secondAttribute="centerY" id="y2A-ij-1td"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="QGZ-b4-zCe"/>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="C0k-SZ-2ab"/>
+                            </mask>
+                        </variation>
                     </view>
                     <connections>
                         <outlet property="alphaSlider" destination="jV6-kf-Rrz" id="piG-B4-VIA"/>
