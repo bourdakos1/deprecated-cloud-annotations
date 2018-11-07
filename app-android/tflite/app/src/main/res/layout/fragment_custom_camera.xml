@@ -15,7 +15,6 @@
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:camera="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -34,8 +33,8 @@
 
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/image_frame"
+    <RelativeLayout
+        android:id="@+id/layout_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -45,41 +44,55 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </FrameLayout>
+        <Button
+            android:id="@+id/close_preview"
+            android:background="@drawable/cancel"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_width="33.333dp"
+            android:layout_height="33.333dp" />
 
-    <LinearLayout
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@id/layout_camera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <com.xlythe.view.camera.CameraView
             android:id="@id/camera"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             camera:quality="high" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="58dp">
+        <ImageView
+            android:background="@drawable/focus"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/content_description"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent" />
 
-            <Button
-                android:id="@+id/capture_bitmap"
-                android:text="plz grab"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                style="?android:buttonBarButtonStyle" />
+        <Button
+            android:id="@+id/capture_bitmap"
+            android:background="@drawable/capture"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"
+            android:layout_width="77dp"
+            android:layout_height="77dp" />
 
-            <Button
-                android:id="@+id/capture"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone" />
+        <!--For the sake of CameraView-->
+        <Button
+            android:id="@+id/capture"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
 
-        </LinearLayout>
-
-    </LinearLayout>
+    </RelativeLayout>
 
 </FrameLayout>

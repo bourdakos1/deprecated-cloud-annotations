@@ -1,32 +1,13 @@
-/* Copyright 2017 The TensorFlow Authors. All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-==============================================================================*/
-
 package com.example.android.tflitecamerademo;
 
 import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -37,7 +18,6 @@ import com.xlythe.view.camera.CameraView;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,17 +29,16 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
 
-public class Camera2BasicFragment extends CameraFragment {
+public class CustomCameraFragment extends CameraFragment {
     private static final String TAG = "CameraFragment";
 
     private CameraView mCamera;
     private ImageView mResult;
-    private LinearLayout mCameraLayout;
-    private FrameLayout mImageFrame;
+    private ViewGroup mCameraLayout;
+    private ViewGroup mPreviewLayout;
     private ImageClassifier mClassifier;
     private BottomSheetBehavior mBottomSheetBehavior;
 
@@ -67,32 +46,36 @@ public class Camera2BasicFragment extends CameraFragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private View.OnClickListener mBitmapCaptured = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            try {
-                Field field = mCamera.getClass().getDeclaredField("mCameraView");
-                field.setAccessible(true);
-                TextureView textureView = (TextureView) field.get(mCamera);
-                Bitmap bitmap = textureView.getBitmap(ImageClassifier.DIM_IMG_SIZE_X, ImageClassifier.DIM_IMG_SIZE_Y);
-                List<Map.Entry<String, Float>> textToShow = mClassifier.classifyFrame(bitmap);
-                textToShow.add(new AbstractMap.SimpleEntry<>("Green Progress", 0.84f));
-                textToShow.add(new AbstractMap.SimpleEntry<>("Yellow Progress", 0.7f));
-                textToShow.add(new AbstractMap.SimpleEntry<>("Red Progress", 0.64f));
-                textToShow.add(new AbstractMap.SimpleEntry<>("Really Long Progress That Should Clip and Show Ellipses", 0.21f));
-                mAdapter = new MyAdapter(textToShow);
-                mRecyclerView.setAdapter(mAdapter);
-                mResult.setImageBitmap(bitmap);
-                mCameraLayout.setVisibility(View.GONE);
-                mImageFrame.setVisibility(View.VISIBLE);
-                mBottomSheetBehavior.setHideable(false);
-                mBottomSheetBehavior.setState(STATE_EXPANDED);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
+    private View.OnClickListener mBitmapCaptured = (view) -> {
+        try {
+            // Reflection.
+            Field field = mCamera.getClass().getDeclaredField("mCameraView");
+            field.setAccessible(true);
+            TextureView textureView = (TextureView) field.get(mCamera);
+
+            // Get the image and classify it.
+            Bitmap bitmap = textureView.getBitmap();
+            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(bitmap, ImageClassifier.DIM_IMG_SIZE_X, ImageClassifier.DIM_IMG_SIZE_Y);
+            List<Map.Entry<String, Float>> textToShow = mClassifier.classifyFrame(thumbnail);
+            mAdapter = new MyAdapter(textToShow);
+            mRecyclerView.setAdapter(mAdapter);
+            mResult.setImageBitmap(bitmap);
+            mCameraLayout.setVisibility(View.GONE);
+            mPreviewLayout.setVisibility(View.VISIBLE);
+            mBottomSheetBehavior.setHideable(false);
+            mBottomSheetBehavior.setState(STATE_EXPANDED);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
+    };
+
+    private View.OnClickListener mClosePreview = (view) -> {
+        mCameraLayout.setVisibility(View.VISIBLE);
+        mPreviewLayout.setVisibility(View.GONE);
+        mBottomSheetBehavior.setHideable(true);
+        mBottomSheetBehavior.setState(STATE_HIDDEN);
     };
 
     @Override
@@ -120,7 +103,7 @@ public class Camera2BasicFragment extends CameraFragment {
         mCamera = view.findViewById(R.id.camera);
         mResult = view.findViewById(R.id.image_result);
         mCameraLayout = view.findViewById(R.id.layout_camera);
-        mImageFrame = view.findViewById(R.id.image_frame);
+        mPreviewLayout = view.findViewById(R.id.layout_preview);
 
         try {
             mClassifier = new ImageClassifier(getContext());
@@ -128,13 +111,15 @@ public class Camera2BasicFragment extends CameraFragment {
             e.printStackTrace();
         }
 
-        Button button = view.findViewById(R.id.capture_bitmap);
-        button.setOnClickListener(mBitmapCaptured);
+        Button capture = view.findViewById(R.id.capture_bitmap);
+        Button closePreview = view.findViewById(R.id.close_preview);
+        capture.setOnClickListener(mBitmapCaptured);
+        closePreview.setOnClickListener(mClosePreview);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return View.inflate(getContext(), R.layout.fragment_camera2_basic, container);
+        return View.inflate(getContext(), R.layout.fragment_custom_camera, container);
     }
 
     @Override
