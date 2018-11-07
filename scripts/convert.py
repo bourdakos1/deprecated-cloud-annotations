@@ -22,6 +22,10 @@ if args.coreml:
                      mlmodel_path=args.mlmodel_path,
                      output_feature_names=['{}:0'.format(args.output_name)],
                      class_labels=args.class_labels,
+                     red_bias=-1,
+                     green_bias=-1,
+                     blue_bias=-1,
+                     image_scale=1.0/128.0,
                      image_input_names='{}:0'.format(args.input_name))
 
 if args.tflite:
