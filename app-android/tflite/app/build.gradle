@@ -2,16 +2,12 @@ apply plugin: 'com.android.application'
 
 project.ext.ASSET_DIR = projectDir.toString() + '/src/main/assets'
 
-assert file(project.ext.ASSET_DIR + "/graph.lite").exists()
-assert file(project.ext.ASSET_DIR + "/labels.txt").exists()
-
 android {
-    compileSdkVersion 26
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
     defaultConfig {
         applicationId "android.example.com.tflitecamerademo"
-        minSdkVersion 21
-        targetSdkVersion 26
+        minSdkVersion 14
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -48,11 +44,12 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support.constraint:constraint-layout:1.1.0'
-    compile 'com.android.support:design:25.2.0'
-    compile 'com.android.support:support-annotations:25.3.1'
-    compile 'com.android.support:support-v13:25.2.0'
+    implementation 'com.xlythe:camera-view:1.2.8'
+    implementation 'androidx.legacy:legacy-support-v4:+'
+    implementation 'androidx.appcompat:appcompat:+'
+    implementation 'androidx.exifinterface:exifinterface:+'
+    implementation 'com.google.android.material:material:+'
+    implementation 'androidx.recyclerview:recyclerview:+'
 
     compile 'org.tensorflow:tensorflow-lite:+'
 
