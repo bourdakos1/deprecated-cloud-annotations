@@ -27,15 +27,14 @@
     <!-- If you're not saving the file to the SD Card, you can set a max sdk version of 18 (Jellybean) -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
 
-    <uses-sdk android:minSdkVersion="21" />
-
     <application android:allowBackup="true"
         android:label="@string/app_name"
         android:icon="@drawable/ic_launcher"
         android:theme="@style/MaterialTheme">
 
         <activity android:name="com.example.android.tflitecamerademo.CameraActivity"
-                  android:label="@string/app_name">
+                  android:label="@string/app_name"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
