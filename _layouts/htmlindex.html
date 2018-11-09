@@ -1,21 +1,10 @@
----
-layout: base
----
+<html>
+<body>
 <div style="position: fixed; left: 0; right: 0; top: 0; height: 50px; background-color: green;">TITLE BAR</div>
-<div style="position: fixed; left: 0; top: 50px; bottom: 0; width: 223px; background-color: red;">
-  <ol>
-  {% for item in site.steps %}
-    {% if item.url == page.url %}
-      <li>{{ item.title }}</li>
-    {% else %}
-      <li><a href="{{ item.url | relative_url }}">{{ item.title }}</a></li>
-    {% endif %}
-  {% endfor %}
-  </ol>
-</div>
+<div style="position: fixed; left: 0; top: 50px; bottom: 0; width: 223px; background-color: red;">SIDE BAR</div>
 <div style="position: fixed; left: 223px; right: 0; top: 50px; bottom: 0; background-color: blue; overflow: auto;">
   <div style="width: 742px; margin: 0 auto; background-color: gold; padding-bottom: 100px;">
-    {{ content }}
+
   </div>
 </div>
 <div style="position: fixed; left: 223px; right: 0; bottom: 0; height: 50px; background-color: cyan;">
@@ -25,3 +14,5 @@ layout: base
     <div style="background-color: white; padding: 20px;">NEXT</div>
   </div>
 </div>
+</body>
+</html>
