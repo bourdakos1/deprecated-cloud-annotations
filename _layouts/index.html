@@ -26,7 +26,7 @@ layout: base
   <div style=" display: flex; justify-content: center;">
     {% if page.previous %}
     <a
-      style="background-color: #50a7a4; padding: 20px;"
+      class="button secondary"
       href="{{ page.previous.url | relative_url }}"
       aria-label="Previous page"
     >
@@ -34,7 +34,7 @@ layout: base
     </a>
     {% else %}
     <a
-      style="background-color: #50a7a4; padding: 20px; visibility: hidden;"
+      class="button secondary hide"
       href="###"
     >
       Back
@@ -43,7 +43,7 @@ layout: base
     <div style="width: 870px;"></div>
     {% if page.next %}
     <a
-      style="background-color: #50a7a4; padding: 20px;"
+      class="button primary"
       href="{{ page.next.url | relative_url }}"
       aria-label="Next page"
     >
@@ -51,7 +51,7 @@ layout: base
     </a>
     {% else %}
     <a
-      style="background-color: #50a7a4; padding: 20px; visibility: hidden;"
+      class="button primary hide"
       href="###"
     >
       Next
