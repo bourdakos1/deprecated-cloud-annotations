@@ -30,6 +30,13 @@ layout: base
     >
       Back
     </a>
+    {% else %}
+    <a
+      style="background-color: #50a7a4; padding: 20px; visibility: hidden;"
+      href="###"
+    >
+      Back
+    </a>
     {% endif %}
     <div style="width: 870px;"></div>
     {% if page.next %}
@@ -37,6 +44,13 @@ layout: base
       style="background-color: #50a7a4; padding: 20px;"
       href="{{ page.next.url | relative_url }}"
       aria-label="Next page"
+    >
+      Next
+    </a>
+    {% else %}
+    <a
+      style="background-color: #50a7a4; padding: 20px; visibility: hidden;"
+      href="###"
     >
       Next
     </a>
