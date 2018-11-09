@@ -66,7 +66,7 @@
 .content {
   width: 742px;
   margin: 0 auto;
-  padding: 0 50px 0 100px;
+  padding: 50px 0 100px 0;
 }
 
 .content img {
