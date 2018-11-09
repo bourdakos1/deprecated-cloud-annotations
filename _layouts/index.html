@@ -15,13 +15,31 @@ layout: base
 </div>
 <div style="position: fixed; left: 223px; right: 0; top: 50px; bottom: 0; overflow: auto;">
   <div style="width: 742px; margin: 0 auto; padding-bottom: 100px;">
+    <h1>{{ page.title }}</h1>
+    <hr class="divider-alternate-1" />
     {{ content }}
   </div>
 </div>
 <div style="position: fixed; left: 223px; right: 0; bottom: 0;">
   <div style=" display: flex; justify-content: center;">
-    <div style="background-color: #50a7a4; padding: 20px;">Back</div>
+    {% if page.previous %}
+    <a
+      style="background-color: #50a7a4; padding: 20px;"
+      href="{{ page.previous.url | relative_url }}"
+      aria-label="Previous page"
+    >
+      Back
+    </a>
+    {% endif %}
     <div style="width: 870px;"></div>
-    <div style="background-color: #50a7a4; padding: 20px;">Next</div>
+    {% if page.next %}
+    <a
+      style="background-color: #50a7a4; padding: 20px;"
+      href="{{ page.next.url | relative_url }}"
+      aria-label="Next page"
+    >
+      Next
+    </a>
+    {% endif %}
   </div>
 </div>
