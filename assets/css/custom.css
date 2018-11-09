@@ -1,3 +1,25 @@
-html {
-  color: red;
+.titlebar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 50px;
+  background-color: #3f3f3f;
+  display: flex;
+  align-items: center;
+}
+
+.titlebar.text {
+  color: rgb(242, 244, 248);
+  font-size: 16px;
+}
+
+.titlebar.main {
+  margin-left: 50px;
+  font-weight: 400;
+}
+
+.titlebar.sub {
+  margin-left: 4px;
+  font-weight: 600;
 }
