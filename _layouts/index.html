@@ -36,21 +36,16 @@ layout: base
       Back
     </a>
     <div style="width: 870px;"></div>
+    {% assign hide_next = "hide" %}
     {% if page.next %}
+    {% assign hide_next = "" %}
+    {% endif %}
     <a
-      class="button primary"
+      class="button primary {{ hide_next }}"
       href="{{ page.next.url | relative_url }}"
       aria-label="Next page"
     >
       Next
     </a>
-    {% else %}
-    <a
-      class="button primary hide"
-      href="###"
-    >
-      Next
-    </a>
-    {% endif %}
   </div>
 </div>
