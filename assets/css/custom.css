@@ -53,3 +53,23 @@
 .hide {
   visibility: hidden;
 }
+
+.content-wrapper {
+  position: fixed;
+  left: 223px;
+  right: 0;
+  top: 50px;
+  bottom: 0;
+  overflow: auto;
+}
+
+.content {
+  width: 742px;
+  margin: 0 auto;
+  padding: 0 50px 0 100px;
+}
+
+.content img {
+  max-width: 100%;
+  height: auto;
+}
