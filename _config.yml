@@ -4,8 +4,8 @@ description: >-
   Watson Visual Recognition & Core ML Code Pattern
 baseurl: "/cloud-annotations" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: yrezgui
-github_username:  yrezgui
+twitter_username: bourdakos1
+github_username:  bourdakos1
 
 # Build settings
 markdown: kramdown
@@ -17,48 +17,17 @@ codepattern_url: https://developer.ibm.com/code/patterns/deploy-a-core-ml-model-
 
 # Authors
 authors:
-  - name: Yacine Rezgui
-    twitter: yrezgui
-    github: yrezgui
-  - name: Sam Couch
-    twitter: SamuelCouch
-    github: samuelcouch
+  - name: Nick Bourdakos
+    twitter: bourdakos1
+    github: bourdakos1
 
 collections:
-  advanced:
-    output: true
-  simple:
-    output: true
-  multiple:
-    output: true
-  plz_work:
-    output: true
-  arduino:
+  steps:
     output: true
 
 defaults:
   - scope:
       path: ""
-      type: "advanced"
+      type: "steps"
     values:
-      layout: advanced_lesson
-  - scope:
-      path: ""
-      type: "simple"
-    values:
-      layout: simple_lesson
-  - scope:
-      path: ""
-      type: "multiple"
-    values:
-      layout: multiple_lesson
-  - scope:
-      path: ""
-      type: "plz_work"
-    values:
-      layout: plz_work
-  - scope:
-      path: ""
-      type: "arduino"
-    values:
-      layout: arduino_lesson
+      layout: index
