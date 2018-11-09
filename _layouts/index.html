@@ -22,24 +22,19 @@ layout: base
     {{ content }}
   </div>
 </div>
-<div style="position: fixed; left: 223px; right: 0; bottom: 0;">
+<div style="position: fixed; left: 223px; right: 0; bottom: 50px;">
   <div style=" display: flex; justify-content: center;">
+    {% assign hide_prev = "hide" %}
     {% if page.previous %}
+    {% assign hide_prev = "" %}
+    {% endif %}
     <a
-      class="button secondary"
+      class="button secondary {{ hide_prev }}"
       href="{{ page.previous.url | relative_url }}"
       aria-label="Previous page"
     >
       Back
     </a>
-    {% else %}
-    <a
-      class="button secondary hide"
-      href="###"
-    >
-      Back
-    </a>
-    {% endif %}
     <div style="width: 870px;"></div>
     {% if page.next %}
     <a
