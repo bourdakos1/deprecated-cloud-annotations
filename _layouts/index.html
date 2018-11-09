@@ -1,100 +1,76 @@
 ---
 layout: base
 ---
-
-<div class="display-flex col-middle aligner" style="height:100vh;">
-  <div class="pui-panel-container">
-    <div class="pui-panel bg-neutral-11 box-shadow-1 border-rounded paxxxl">
-      <div class="pui-panel-body opt-inner-class txt-c" style="width: 550px;">
-        
-        <p style="margin-top: 150px;">
-          <svg alt="ibm-logo" height="40">
-            <use xlink:href="#ibm-logo"></use>
-          </svg>
-        </p>
-        {{ content }}
-        <br />
-        <p>
-          <div class="ok_row">
-
-           <div class="ok_column">
-             <div class="card">
-              <div class="card_container">
-                <h4><b>Simple Tutorial<br/>(Single Model)</b></h4>
-                <br />
-                <p>Create your own custom image classifier using a single model and deploy to an iOS application.</p>
-                <a href="{{ site.simple[0].url | relative_url }}" class="pui-btn pui-btn-primary pui-btn-lg btn btn-primary btn-lg" aria-label="Start code pattern">
-                  <span class="btn-inner-content pui-btn-inner-content">
-                    <span>Start</span>
-                  </span>
-                </a>
-                <br />
-              </div>
-            </div>
-           </div>
-
-           <div class="ok_column">
-             <div class="card">
-              <div class="card_container">
-                <h4><b>Simple Tutorial<br/>(Multiple Models)</b></h4>
-                <br />
-                <p>Create your own custom image classifier using multiple models and deploy to an iOS application.</p>
-                <a href="{{ site.multiple[0].url | relative_url }}" class="pui-btn pui-btn-primary pui-btn-lg btn btn-primary btn-lg" aria-label="Start code pattern">
-                  <span class="btn-inner-content pui-btn-inner-content">
-                    <span>Start</span>
-                  </span>
-                </a>
-                <br />
-              </div>
-            </div>
-           </div>
-
+<div class="grid grid-nogutter grid-show" style="min-height: 100vh">
+  <div class="col col-fixed pvxl phxl" style="width:350px;">
+    <p class="txt-c">
+      <a href="https://developer.ibm.com/code">
+        <svg alt="ibm-logo" height="40">
+          <use xlink:href="#ibm-logo"></use>
+        </svg>
+      </a>
+    </p>
+    <a
+      href="{{ site.url }}/watson-vision-coreml-code-pattern/"
+      class="pui-btn pui-btn-brand pui-btn-sm btn btn-brand btn-sm btn-full"
+      aria-label="Clone code pattern"
+    >
+      <span class="btn-inner-content pui-btn-inner-content">
+        <span>{{ site.codepattern_title }}</span>
+      </span>
+    </a>
+    <br />
+    <br />
+    <ol>
+    {% for item in site.advanced %}
+      {% if item.url == page.url %}
+        <li>{{ item.title }}</li>
+      {% else %}
+        <li><a href="{{ item.url | relative_url }}">{{ item.title }}</a></li>
+      {% endif %}
+    {% endfor %}
+    </ol>
+  </div>
+  <div id="lesson" class="col paxxxl bg-neutral-11">
+    <h1>{{ page.title }}</h1>
+    <hr class="divider-alternate-1" />
+    <br />
+    {{ content }}
+    <br />
+    <div>
+      {% if page.previous %}
+      <a
+        href="{{ page.previous.url | relative_url }}"
+        class="pui-btn pui-btn-default btn btn-default float-left"
+        aria-label="Previous page"
+      >
+        <span class="btn-inner-content pui-btn-inner-content">
+          <div class="icon icon-middle">
+            <svg alt="previous page icon" width="48" height="48">
+              <use xlink:href="#icon-chevron-left"></use>
+            </svg>
           </div>
-        </p>
-        <br />
-        <p>
-          <div class="ok_row">
-            <div class="ok_column">
-             <div class="card">
-              <div class="card_container">
-                <h4><b>Advanced Tutorial<br/>(Single Model)</b></h4>
-                <br />
-                <p>Introduction to Watson Swift SDK as well as building your own custom image classifier using a single model.</p>
-                <a href="{{ site.advanced[0].url | relative_url }}" class="pui-btn pui-btn-primary pui-btn-lg btn btn-primary btn-lg" aria-label="Start code pattern">
-                  <span class="btn-inner-content pui-btn-inner-content">
-                    <span>Start</span>
-                  </span>
-                </a>
-                <br />
-              </div>
-            </div>
-           </div>
-
-           <div class="ok_column">
-             <div class="card">
-              <div class="card_container">
-                <h4><b>Advanced Tutorial (Multiple Models)</b></h4>
-                <br />
-                <p>Introduction to Watson Swift SDK as well as building your own custom image classifier with multiple models.</p>
-                <a href="{{ site.arduino[0].url | relative_url }}" class="pui-btn pui-btn-primary pui-btn-lg btn btn-primary btn-lg" aria-label="Start code pattern">
-                  <span class="btn-inner-content pui-btn-inner-content">
-                    <span>Start</span>
-                  </span>
-                </a>
-                <br />
-              </div>
-            </div>
-           </div>
-         </div>
-        </p>
-        <!-- <p>
-          <a href="{{ site.simple[0].url | relative_url }}" class="pui-btn pui-btn-primary pui-btn-lg btn btn-primary btn-lg" aria-label="Start code pattern">
-            <span class="btn-inner-content pui-btn-inner-content">
-              <span>Start</span>
-            </span>
-          </a>
-        </p> -->
-      </div>
+          <span>Previous</span>
+        </span>
+      </a>
+      {% endif %}
+      {% if page.next %}
+      <a
+        href="{{ page.next.url | relative_url }}"
+        class="pui-btn pui-btn-primary btn btn-primary float-right"
+        aria-label="Next page"
+      >
+        <span class="btn-inner-content pui-btn-inner-content">
+          <span>Next</span>
+          <div class="icon icon-middle">
+            <svg alt="next page icon" width="48" height="48">
+              <use xlink:href="#icon-chevron-right"></use>
+            </svg>
+          </div>
+        </span>
+      </a>
+      {% endif %}
+      <br />
     </div>
   </div>
 </div>

@@ -2,7 +2,7 @@
 title: IBM Core ML Code Pattern
 description: >-
   Watson Visual Recognition & Core ML Code Pattern
-baseurl: "/watson-vision-coreml-code-pattern" # the subpath of your site, e.g. /blog
+baseurl: "/cloud-annotations" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: yrezgui
 github_username:  yrezgui
