@@ -24,6 +24,7 @@ authors:
 collections:
   steps:
     output: true
+    permalink: /:path:output_ext
 
 defaults:
   - scope:
