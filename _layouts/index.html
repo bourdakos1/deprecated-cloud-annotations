@@ -4,7 +4,7 @@ layout: base
 <div class="titlebar">
   <span class="text main">IBM</span><span class="text sub">&nbsp;Developer</span>
 </div>
-<div style="position: fixed; left: 0; top: 50px; bottom: 0; width: 223px;">
+<div class="sidebar" style="position: fixed; left: 0; top: 50px; bottom: 0; width: 223px;">
   <ol>
   {% for item in site.steps %}
     {% if item.url == page.url %}
@@ -29,7 +29,7 @@ layout: base
     {% assign hide_prev = "" %}
     {% endif %}
     <a
-      class="button secondary {{ hide_prev }}"
+      class="button secondary left {{ hide_prev }}"
       href="{{ page.previous.url | relative_url }}"
       aria-label="Previous page"
     >
@@ -41,7 +41,7 @@ layout: base
     {% assign hide_next = "" %}
     {% endif %}
     <a
-      class="button primary {{ hide_next }}"
+      class="button primary right {{ hide_next }}"
       href="{{ page.next.url | relative_url }}"
       aria-label="Next page"
     >

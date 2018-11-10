@@ -24,6 +24,14 @@
   font-weight: 600;
 }
 
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 50px;
+  bottom: 0;
+  width: 223px;
+}
+
 .button {
   align-items: center;
   cursor: pointer;
@@ -50,6 +58,14 @@
   color: #50a7a4;
 }
 
+.button.left {
+  margin-left: 40px;
+}
+
+.button.right {
+  margin-right: 40px;
+}
+
 .hide {
   visibility: hidden;
 }
@@ -65,6 +81,7 @@
 
 .content {
   width: 742px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 50px 0 100px 0;
 }
@@ -72,4 +89,20 @@
 .content img {
   max-width: 100%;
   height: auto;
+}
+
+@media (min-width: 980px) {
+  .button {
+    background-color: red;
+  }
+}
+
+@media (min-width: 1200px) {
+  .content-wrapper {
+    left: 0;
+  }
+
+  .sidebar {
+    visibility: collapse;
+  }
 }
