@@ -1,6 +1,6 @@
 ---
 title: Prepare your data
-date: 2018-01-03
+date: 1970-01-04
 ---
 In order to create our model, we have to provide training images to the classifier. Take a few minutes to take photos of the cables to prepare our data.
 ![](assets/example_training_images.jpeg)

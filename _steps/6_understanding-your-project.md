@@ -23,7 +23,7 @@ First, ensure that **Visual Recognition** is checked under **Tools**. This will 
 
 <!-- NEW STEPS FOR ADDING WATSON TOOLS -->
 
-If you do not see an option for **Watson Tools**, you will need to perform the following steps. 
+If you do not see an option for **Watson Tools**, you will need to perform the following steps.
 
 ![](assets/watson-tools-missing-1.png)
 
