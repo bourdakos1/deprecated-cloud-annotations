@@ -32,6 +32,7 @@
   width: 256px;
   transform: translate(-256px);
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .button {
@@ -102,6 +103,7 @@
   top: 50px;
   bottom: 0;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .content {
