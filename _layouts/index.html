@@ -4,17 +4,19 @@ layout: base
 <div class="titlebar">
   <span class="text main">IBM</span><span class="text sub">&nbsp;Developer</span>
 </div>
-<div class="sidebar" style="position: fixed; left: 0; top: 50px; bottom: 0; width: 223px;">
-  <ol>
+
+<div class="sidebar">
+  <ol class="stepper">
   {% for item in site.steps %}
     {% if item.url == page.url %}
-      <li>{{ item.title }}</li>
+      <li class="stepper-item active" ><a href="{{ item.url | relative_url }}">{{ item.title }}</a></li>
     {% else %}
-      <li><a href="{{ item.url | relative_url }}">{{ item.title }}</a></li>
+      <li class="stepper-item"><a href="{{ item.url | relative_url }}">{{ item.title }}</a></li>
     {% endif %}
   {% endfor %}
   </ol>
 </div>
+
 <div class="content-wrapper">
   <div class="content">
     <h1>{{ page.title }}</h1>
@@ -22,30 +24,29 @@ layout: base
     {{ content }}
   </div>
 </div>
-<div style="position: fixed; left: 223px; right: 0; bottom: 50px;">
-  <div style=" display: flex; justify-content: center;">
-    {% assign hide_prev = "hide" %}
-    {% if page.previous %}
-    {% assign hide_prev = "" %}
-    {% endif %}
-    <a
-      class="button secondary left {{ hide_prev }}"
-      href="{{ page.previous.url | relative_url }}"
-      aria-label="Previous page"
-    >
-      Back
-    </a>
-    <div style="width: 870px;"></div>
-    {% assign hide_next = "hide" %}
-    {% if page.next %}
-    {% assign hide_next = "" %}
-    {% endif %}
-    <a
-      class="button primary right {{ hide_next }}"
-      href="{{ page.next.url | relative_url }}"
-      aria-label="Next page"
-    >
-      Next
-    </a>
-  </div>
+
+<div class="controls-wrapper">
+  {% assign hide_prev = "hide" %}
+  {% if page.previous %}
+  {% assign hide_prev = "" %}
+  {% endif %}
+  <a
+    class="button secondary {{ hide_prev }}"
+    href="{{ page.previous.url | relative_url }}"
+    aria-label="Previous page"
+  >
+    Back
+  </a>
+  <div class="spacer"></div>
+  {% assign hide_next = "hide" %}
+  {% if page.next %}
+  {% assign hide_next = "" %}
+  {% endif %}
+  <a
+    class="button primary {{ hide_next }}"
+    href="{{ page.next.url | relative_url }}"
+    aria-label="Next page"
+  >
+    Next
+  </a>
 </div>
