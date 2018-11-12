@@ -12,4 +12,4 @@ A mobile app (iOS or Android) that can take photos and use on-device machine lea
 ## Prerequisites
 * **Recommended:** A basic understanding of using terminal
 
-> **Note:** For a less hands on approach to creating a custom image classification model try going through this [tutorial](https://watson-developer-cloud.github.io/watson-vision-coreml-code-pattern/advanced/introduction.html) on the Watson Visual Recognition service.
+> **Note:** For a less hands on approach to creating a custom image classification model try going through this [tutorial](https://watson-developer-cloud.github.io/watson-vision-coreml-code-pattern/advanced/introduction.html) on Watson Visual Recognition and Core ML.
