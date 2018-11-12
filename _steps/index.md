@@ -8,3 +8,8 @@ date: 1970-01-01
 ## What you will build
 A mobile app (iOS or Android) that can take photos and use on-device machine learning to classy the image.
 ![](https://github.com/bourdakos1/visual-recognition-with-coreml/raw/master/Screenshots/iPhone.png)
+
+## Prerequisites
+* **Recommended:** A basic understanding of using terminal
+
+> **Note:** For a less hands on approach to creating a custom image classification model try going through this [tutorial](https://watson-developer-cloud.github.io/watson-vision-coreml-code-pattern/advanced/introduction.html) on the Watson Visual Recognition service.
