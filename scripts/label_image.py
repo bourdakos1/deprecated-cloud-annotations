@@ -17,6 +17,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+try:
+  from urllib.request import urlretrieve
+except ImportError:
+  from urllib2 import urlretrieve
+
 import argparse
 import sys
 import time
@@ -35,10 +40,31 @@ def load_graph(model_file):
 
   return graph
 
+def fetch_if_url(file_name):
+  if file_name.startswith('http://') or file_name.startswith('https://'):
+    base_name = file_name.split('?', 1)[0] # Remove query params.
+    if base_name.endswith('.png'):
+      urlretrieve(file_name, 'tmp.png')
+      file_name = 'tmp.jpg'
+    elif base_name.endswith('.gif'):
+      urlretrieve(file_name, 'tmp.gif')
+      file_name = 'tmp.jpg'
+    elif base_name.endswith('.bmp'):
+      urlretrieve(file_name, 'tmp.bmp')
+      file_name = 'tmp.jpg'
+    else:
+      urlretrieve(file_name, 'tmp.jpg')
+      file_name = 'tmp.jpg'
+
+  return file_name
+
 def read_tensor_from_image_file(file_name, input_height=299, input_width=299,
 				input_mean=0, input_std=255):
+
   input_name = "file_reader"
   output_name = "normalized"
+  file_name = fetch_if_url(file_name)
+
   file_reader = tf.read_file(file_name, input_name)
   if file_name.endswith(".png"):
     image_reader = tf.image.decode_png(file_reader, channels = 3,
@@ -126,8 +152,8 @@ if __name__ == "__main__":
     results = sess.run(output_operation.outputs[0],
                       {input_operation.outputs[0]: t})
     end=time.time()
-  results = np.squeeze(results)
 
+  results = np.squeeze(results)
   top_k = results.argsort()[-5:][::-1]
   labels = load_labels(label_file)
 
