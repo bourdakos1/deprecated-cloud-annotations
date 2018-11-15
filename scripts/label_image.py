@@ -20,7 +20,7 @@ from __future__ import print_function
 try:
   from urllib.request import urlretrieve
 except ImportError:
-  from urllib2 import urlretrieve
+  from urllib import urlretrieve
 
 import argparse
 import sys
