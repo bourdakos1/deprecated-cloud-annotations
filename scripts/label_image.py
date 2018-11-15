@@ -45,13 +45,13 @@ def fetch_if_url(file_name):
     base_name = file_name.split('?', 1)[0] # Remove query params.
     if base_name.endswith('.png'):
       urlretrieve(file_name, 'tmp.png')
-      file_name = 'tmp.jpg'
+      file_name = 'tmp.png'
     elif base_name.endswith('.gif'):
       urlretrieve(file_name, 'tmp.gif')
-      file_name = 'tmp.jpg'
+      file_name = 'tmp.gif'
     elif base_name.endswith('.bmp'):
       urlretrieve(file_name, 'tmp.bmp')
-      file_name = 'tmp.jpg'
+      file_name = 'tmp.bmp'
     else:
       urlretrieve(file_name, 'tmp.jpg')
       file_name = 'tmp.jpg'
